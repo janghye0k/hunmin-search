@@ -8,6 +8,7 @@ import {
   levenshteinKo,
   matchSubsequenceKo,
   rankByKoPipeline,
+  searchRanked,
 } from '../src/index';
 
 describe('package entry exports', () => {
@@ -26,5 +27,9 @@ describe('package entry exports', () => {
   it('re-exports Phase C subsequence + pipeline', () => {
     expect(matchSubsequenceKo('길', '홍길동').ok).toBe(true);
     expect(rankByKoPipeline('a', ['xa', 'a'])[0]?.value).toBe('a');
+  });
+
+  it('re-exports Phase D public search API', () => {
+    expect(searchRanked('홍길', ['홍길동', '서울'])[0]?.value).toBe('홍길동');
   });
 });
