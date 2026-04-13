@@ -2,4 +2,17 @@ export { disassemble, disassembleCompleteCharacter, disassembleToGroups, getChos
 export type { DisassembledSyllable } from './hangul/index';
 
 export { hasFinal, isConsonant, isKorean, isSimilar, isSyllable } from './korean/index';
-export { type LevenshteinKoOptions, levenshteinKo } from './score/index';
+export {
+  type KoPipelineOptions,
+  type LevenshteinKoOptions,
+  type LevenshteinKoTraceOp,
+  type LevenshteinKoTraceResult,
+  type MatchSubsequenceKoOptions,
+  type RankedKoHit,
+  type SubsequenceMatchKind,
+  type SubsequenceMatchResult,
+  levenshteinKo,
+  levenshteinKoTrace,
+  matchSubsequenceKo,
+  rankByKoPipeline,
+} from './score/index';
