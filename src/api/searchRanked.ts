@@ -2,13 +2,22 @@ import { rankByKoPipeline, type KoPipelineOptions } from '../score/pipeline';
 
 export interface SearchRankedHit {
   value: string;
-  /** Normalized: `(candidate.length - editDistance) / candidate.length` (kled-style). */
+  /**
+   * Normalized match quality in `[0, 1]` (kled-style ratio, clamped).
+   * See {@link rankByKoPipeline} / `RankedKoHit.score`.
+   */
   score: number;
 }
 
 /**
  * Runs subsequence filter → Korean Levenshtein score → descending sort.
+ *
  * Default: candidates that fail subsequence are omitted; use `includeNonMatching` to keep them with score `0`.
+ * For `editDistance` (including `null` on subsequence failures), use {@link searchDetailed} or {@link rankByKoPipeline}.
+ *
+ * **Performance:** Work is linear in `candidates.length` and, per candidate, includes subsequence scan plus
+ * O(|query|×|candidate|) dynamic programming for Levenshtein. There is no internal maximum on counts or lengths;
+ * truncate, pre-filter, or chunk `candidates` in the caller when inputs can be large.
  */
 export function searchRanked(
   query: string,

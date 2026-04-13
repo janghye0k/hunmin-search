@@ -26,6 +26,7 @@ describe('rankByKoPipeline', () => {
     expect(out[1]?.value).toBe('abc');
     expect(out[1]?.score).toBe(0);
     expect(out[1]?.ok).toBe(false);
+    expect(out[1]?.editDistance).toBeNull();
   });
 
   it('attaches subsequence indices for matches', () => {

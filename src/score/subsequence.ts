@@ -1,4 +1,5 @@
 import { hasFinal, isKorean, isSimilar } from '../korean/similarity';
+import { caseFoldEnUs } from '../util/caseFoldEnUs';
 
 export type SubsequenceMatchKind = 'exact' | 'similar';
 
@@ -22,8 +23,8 @@ export function matchSubsequenceKo(
   options: MatchSubsequenceKoOptions = {}
 ): SubsequenceMatchResult {
   const caseSensitive = options.caseSensitive ?? false;
-  const q = caseSensitive ? query : query.toLowerCase();
-  const h = caseSensitive ? haystack : haystack.toLowerCase();
+  const q = caseSensitive ? query : caseFoldEnUs(query);
+  const h = caseSensitive ? haystack : caseFoldEnUs(haystack);
 
   if (q.length === 0) {
     return { ok: true, targetIndices: [], kinds: [] };

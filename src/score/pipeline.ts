@@ -10,15 +10,31 @@ export interface KoPipelineOptions extends LevenshteinKoOptions {
 export interface RankedKoHit {
   value: string;
   ok: boolean;
-  /** kled-style: (haystack.length - editDistance) / haystack.length */
+  /**
+   * Normalized match quality in `[0, 1]` (kled-style ratio, clamped).
+   * `(len - editDistance) / len`, or `1` when both query and candidate are empty.
+   */
   score: number;
-  editDistance: number;
+  /** Levenshtein distance for passing candidates; `null` when subsequence failed (`includeNonMatching`). */
+  editDistance: number | null;
   targetIndices: number[];
   kinds: SubsequenceMatchKind[];
 }
 
+function normalizedKoScore(candidateLen: number, queryLen: number, editDistance: number): number {
+  if (candidateLen === 0) {
+    return queryLen === 0 ? 1 : 0;
+  }
+  const raw = (candidateLen - editDistance) / candidateLen;
+  return Math.min(1, Math.max(0, raw));
+}
+
 /**
  * Subsequence filter → `levenshteinKo` score → sort by score descending.
+ *
+ * **Performance:** Each candidate runs subsequence match plus O(|query|×|candidate|) DP. There is no
+ * internal cap on `candidates.length` or string lengths — callers should bound batch size and length
+ * (e.g. truncate or pre-filter) for large inputs.
  */
 export function rankByKoPipeline(query: string, candidates: string[], options: KoPipelineOptions = {}): RankedKoHit[] {
   const { includeNonMatching = false, ...levOpts } = options;
@@ -36,7 +52,7 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
           value,
           ok: false,
           score: 0,
-          editDistance: Number.POSITIVE_INFINITY,
+          editDistance: null,
           targetIndices: [],
           kinds: [],
         });
@@ -45,7 +61,7 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
     }
 
     const editDistance = levenshteinKo(query, value, levOpts);
-    const score = (value.length - editDistance) / value.length;
+    const score = normalizedKoScore(value.length, query.length, editDistance);
 
     hits.push({
       value,
@@ -62,7 +78,10 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
     if (approxSort(x.score, y.score) !== 0) {
       return y.score - x.score;
     }
-    return x.editDistance - y.editDistance;
+    if (x.ok && y.ok) {
+      return x.editDistance! - y.editDistance!;
+    }
+    return x.value.localeCompare(y.value);
   });
 
   return hits;

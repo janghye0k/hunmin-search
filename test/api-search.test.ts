@@ -30,7 +30,8 @@ describe('searchDetailed', () => {
     expect(out[0]!.subsequenceAlignments).toEqual([
       { queryIndex: 0, targetIndex: 1, kind: 'exact' },
     ]);
-    expect(out[0]!.editDistance).toBeGreaterThanOrEqual(0);
+    expect(out[0]!.editDistance).not.toBeNull();
+    expect(out[0]!.editDistance!).toBeGreaterThanOrEqual(0);
     expect(out[0]!.score).toBeGreaterThan(0);
   });
 
@@ -51,6 +52,7 @@ describe('searchDetailed', () => {
     expect(out).toHaveLength(1);
     expect(out[0]!.value).toBe('abc');
     expect(out[0]!.score).toBe(0);
+    expect(out[0]!.editDistance).toBeNull();
     expect(out[0]!.subsequenceAlignments).toEqual([]);
     expect(out[0]!.editTrace).toBeUndefined();
   });

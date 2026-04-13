@@ -1,4 +1,5 @@
 import { isKorean, isSimilar } from '../korean/similarity';
+import { caseFoldEnUs } from '../util/caseFoldEnUs';
 
 export interface LevenshteinKoOptions {
   caseSensitive?: boolean;
@@ -57,8 +58,8 @@ export function levenshteinKo(a: string, b: string, options: LevenshteinKoOption
   let s1 = a;
   let s2 = b;
   if (!caseSensitive) {
-    s1 = s1.toLowerCase();
-    s2 = s2.toLowerCase();
+    s1 = caseFoldEnUs(s1);
+    s2 = caseFoldEnUs(s2);
   }
 
   if (s1 === s2) return 0;
@@ -107,8 +108,8 @@ export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoO
   let s1 = a;
   let s2 = b;
   if (!caseSensitive) {
-    s1 = s1.toLowerCase();
-    s2 = s2.toLowerCase();
+    s1 = caseFoldEnUs(s1);
+    s2 = caseFoldEnUs(s2);
   }
 
   if (s1 === s2) {
