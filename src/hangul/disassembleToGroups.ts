@@ -1,6 +1,18 @@
 import { DISASSEMBLED_CONSONANTS_BY_CONSONANT, DISASSEMBLED_VOWELS_BY_VOWEL } from '../constants/hangul';
 import { disassembleCompleteCharacter } from './disassembleCompleteCharacter';
 
+/**
+ * Disassemble each user-perceived character into a group of jamo or pass-through units.
+ *
+ * 완성형은 초·중·종 배열, 호환 자모는 매핑 테이블을 따르고, 나머지는 단일 원소 그룹입니다.
+ *
+ * @example
+ * 다음 예는 자모 덩어리 배열을 만드는 방법을 보여줍니다.
+ *
+ * ```ts
+ * disassembleToGroups('ㄱ')[0]; // ['ㄱ']
+ * ```
+ */
 export function disassembleToGroups(str: string): string[][] {
   const result: string[][] = [];
 

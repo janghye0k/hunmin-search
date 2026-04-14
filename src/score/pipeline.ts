@@ -1,18 +1,30 @@
 import { levenshteinKo, type LevenshteinKoOptions } from './levenshtein-ko';
 import { matchSubsequenceKo, type SubsequenceMatchKind } from './subsequence';
 
+/**
+ * Options for {@link rankByKoPipeline}.
+ *
+ * `includeNonMatching`이 참이면 부분열 실패 후보도 `ok: false`, `score: 0`으로 남깁니다.
+ */
 export interface KoPipelineOptions extends LevenshteinKoOptions {
   caseSensitive?: boolean;
   /** When true, non-matching candidates are kept with `ok: false` and `score: 0`. */
   includeNonMatching?: boolean;
 }
 
+/**
+ * One candidate after subsequence + Levenshtein scoring (before consumer-side mapping).
+ *
+ * `score`는 후보 길이 대비 편집 거리로 정규화한 `[0, 1]` 값입니다. 부분열 실패 시 `editDistance`는 `null`입니다.
+ */
 export interface RankedKoHit {
   value: string;
   ok: boolean;
   /**
    * Normalized match quality in `[0, 1]` (kled-style ratio, clamped).
    * `(len - editDistance) / len`, or `1` when both query and candidate are empty.
+   *
+   * kled 스타일 비율로 클램프합니다. 빈 질의·빈 후보면 `1`입니다.
    */
   score: number;
   /** Levenshtein distance for passing candidates; `null` when subsequence failed (`includeNonMatching`). */
@@ -35,6 +47,15 @@ function normalizedKoScore(candidateLen: number, queryLen: number, editDistance:
  * **Performance:** Each candidate runs subsequence match plus O(|query|×|candidate|) DP. There is no
  * internal cap on `candidates.length` or string lengths — callers should bound batch size and length
  * (e.g. truncate or pre-filter) for large inputs.
+ *
+ * 후보마다 부분열 검사 후 통과 시 {@link levenshteinKo}로 거리를 구하고, 점수 내림차순으로 정렬합니다.
+ *
+ * @example
+ * 다음 예는 짧은 질의로 후보 배열을 정렬하는 흐름을 보여줍니다.
+ *
+ * ```ts
+ * rankByKoPipeline('a', ['xa', 'a'])[0]?.value; // 'a'
+ * ```
  */
 export function rankByKoPipeline(query: string, candidates: string[], options: KoPipelineOptions = {}): RankedKoHit[] {
   const { includeNonMatching = false, ...levOpts } = options;

@@ -1,6 +1,14 @@
 # hangul-search
 
+[English README](./English-README.md) (파일명은 npm 자동 포함 규칙 회피용입니다.)
+
 한글·라틴 혼합 문자열에 대해 **부분열(subsequence) 필터**와 **한글 완화 Levenshtein** 점수로 후보를 정렬하는 소형 라이브러리입니다. **런타임 npm 의존성은 없습니다.**
+
+## 문서
+
+- **한국어 허브**: [docs/ko/README.md](./docs/ko/README.md) · **English hub**: [docs/en/README.md](./docs/en/README.md)
+- **공개 API 목록(동결)**: [docs/api-surface.md](./docs/api-surface.md)
+- npm **배포 tarball**에는 `dist/`, `README.md`(한국어), `LICENSE`만 들어갑니다(`package.json` `files`). 영어 개요는 저장소의 [`English-README.md`](./English-README.md)이며, 상세 문서는 `docs/`에 있습니다. 레지스트리 웹에서 `./docs/...` 링크가 깨지면 Git 호스팅에서 열거나 [docs/DOCUMENTATION_LINKS.md](./docs/DOCUMENTATION_LINKS.md)의 절대 URL 패턴을 쓰세요.
 
 ## 요구 사항
 
@@ -67,6 +75,7 @@ searchHangulRanked('홍길', ['홍길동', '서울']);
 
 ## 개발
 
+- 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md) · 변경 기록: [CHANGELOG.md](./CHANGELOG.md)
 - 소스 타입체크: **`moduleResolution`: `Bundler`**, 상대 경로 import는 **확장자 없이** 작성합니다.
 - 빌드는 **tsup**으로 `dist/`에 ESM(`.js`), CJS(`.cjs`), 브라우저 IIFE(`.global.cjs`), 선언 파일을 냅니다.
 

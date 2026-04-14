@@ -1,0 +1,2 @@
+# Extra safety: never ship docs/ from the repo root even if `files` changes. Phase 5: docs/plan-user-documentation.md.
+docs/

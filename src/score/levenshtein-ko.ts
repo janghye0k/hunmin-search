@@ -1,6 +1,11 @@
 import { isKorean, isSimilar } from '../korean/similarity';
 import { caseFoldEnUs } from '../util/caseFoldEnUs';
 
+/**
+ * Options for {@link levenshteinKo} / {@link levenshteinKoTrace}.
+ *
+ * `similarSubstitutionCost`는 한글 유닛이 {@link isSimilar}로 같지 않지만 유사할 때 대각 이동 비용입니다(기본 0.01).
+ */
 export interface LevenshteinKoOptions {
   caseSensitive?: boolean;
   /** Replacement cost when two Korean units are `isSimilar` but not equal (default 0.01). */
@@ -47,6 +52,15 @@ function fillLevenshteinKoTable(s1: string, s2: string, similarCost: number): nu
 /**
  * Levenshtein distance between two strings with a small discount when two Korean
  * characters are considered “similar” (kled-js behavior).
+ *
+ * 한글 글자 쌍이 {@link isSimilar}이면 치환 비용을 `similarSubstitutionCost`만큼만 줍니다. 라틴은 기본적으로 `en-US` 접기입니다.
+ *
+ * @example
+ * 다음 예는 라틴 대소문자와 한글 혼합에서의 거리를 보여줍니다.
+ *
+ * ```ts
+ * levenshteinKo('A학급', 'B학급'); // 1
+ * ```
  */
 export function levenshteinKo(a: string, b: string, options: LevenshteinKoOptions = {}): number {
   const caseSensitive = options.caseSensitive ?? false;
@@ -68,6 +82,7 @@ export function levenshteinKo(a: string, b: string, options: LevenshteinKoOption
   return table[s2.length]![s1.length]!;
 }
 
+/** One step in the reconstructed edit path for {@link levenshteinKoTrace}. */
 export type LevenshteinKoTraceOp =
   | { kind: 'equal'; aIndex: number; bIndex: number }
   | { kind: 'similar'; aIndex: number; bIndex: number }
@@ -75,6 +90,11 @@ export type LevenshteinKoTraceOp =
   | { kind: 'delete'; aIndex: number }
   | { kind: 'insert'; bIndex: number };
 
+/**
+ * Aggregated trace for Korean-aware Levenshtein.
+ *
+ * `distance`는 {@link levenshteinKo}와 동일하고, `ops`는 역추적한 편집 연산 목록입니다.
+ */
 export interface LevenshteinKoTraceResult {
   distance: number;
   ops: LevenshteinKoTraceOp[];
@@ -82,6 +102,15 @@ export interface LevenshteinKoTraceResult {
 
 /**
  * Same cost model as `levenshteinKo`, plus a greedy backtrace for alignment.
+ *
+ * DP 테이블을 채운 뒤 끝에서부터 연산을 모읍니다. UI나 분석용으로 쓰기에 적합합니다.
+ *
+ * @example
+ * 다음 예는 두 문자열에 대한 역추적 결과를 요청하는 형태를 보여줍니다.
+ *
+ * ```ts
+ * levenshteinKoTrace('가', '각').ops.length >= 0;
+ * ```
  */
 export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoOptions = {}): LevenshteinKoTraceResult {
   const caseSensitive = options.caseSensitive ?? false;
