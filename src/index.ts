@@ -3,8 +3,8 @@ export {
   type SearchDetailedOptions,
   type SearchRankedHit,
   type SubsequenceAlignment,
-  searchDetailed,
-  searchRanked,
+  searchHangulDetailed,
+  searchHangulRanked,
 } from './api/index';
 
 export { disassemble, disassembleCompleteCharacter, disassembleToGroups, getChoseong } from './hangul/index';

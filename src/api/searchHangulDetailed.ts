@@ -25,12 +25,12 @@ export interface SearchDetailedHit {
 }
 
 /**
- * Same ranking as {@link searchRanked}, plus per-candidate alignment and optional Levenshtein backtrace.
+ * Same ranking as {@link searchHangulRanked}, plus per-candidate alignment and optional Levenshtein backtrace.
  *
  * **Performance:** Same cost model as {@link rankByKoPipeline} (see there). Bound `candidates` count and
  * string lengths at the call site for large inputs.
  */
-export function searchDetailed(
+export function searchHangulDetailed(
   query: string,
   candidates: string[],
   options?: SearchDetailedOptions

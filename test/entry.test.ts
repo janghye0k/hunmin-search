@@ -8,28 +8,28 @@ import {
   levenshteinKo,
   matchSubsequenceKo,
   rankByKoPipeline,
-  searchRanked,
+  searchHangulRanked,
 } from '../src/index';
 
 describe('package entry exports', () => {
-  it('re-exports Phase A hangul API', () => {
+  it('re-exports hangul API', () => {
     expect(getChoseong('가')).toBe('ㄱ');
     expect(disassembleCompleteCharacter('값')?.jongseong).toBe('ㅂㅅ');
     expect(disassembleToGroups('ㄱ')[0]).toEqual(['ㄱ']);
     expect(disassemble('가')).toBe('ㄱㅏ');
   });
 
-  it('re-exports Phase B similarity + levenshteinKo', () => {
+  it('re-exports similarity and levenshteinKo', () => {
     expect(isSimilar('가', '강')).toBe(true);
     expect(levenshteinKo('A학급', 'B학급')).toBe(1);
   });
 
-  it('re-exports Phase C subsequence + pipeline', () => {
+  it('re-exports subsequence and ranking pipeline', () => {
     expect(matchSubsequenceKo('길', '홍길동').ok).toBe(true);
     expect(rankByKoPipeline('a', ['xa', 'a'])[0]?.value).toBe('a');
   });
 
-  it('re-exports Phase D public search API', () => {
-    expect(searchRanked('홍길', ['홍길동', '서울'])[0]?.value).toBe('홍길동');
+  it('re-exports public search API', () => {
+    expect(searchHangulRanked('홍길', ['홍길동', '서울'])[0]?.value).toBe('홍길동');
   });
 });

@@ -1,7 +1,7 @@
-export { type SearchRankedHit, searchRanked } from './searchRanked';
+export { type SearchRankedHit, searchHangulRanked } from './searchHangulRanked';
 export {
   type SearchDetailedHit,
   type SearchDetailedOptions,
   type SubsequenceAlignment,
-  searchDetailed,
-} from './searchDetailed';
+  searchHangulDetailed,
+} from './searchHangulDetailed';

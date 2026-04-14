@@ -22,20 +22,20 @@ pnpm add ./path/to/hangul-search
 ### ESM (`import`)
 
 ```js
-import { searchRanked, searchDetailed } from 'hangul-search';
+import { searchHangulRanked, searchHangulDetailed } from 'hangul-search';
 
-searchRanked('홍길', ['홍길동', '서울']);
+searchHangulRanked('홍길', ['홍길동', '서울']);
 // [{ value: '홍길동', score: number }]
 
-searchDetailed('길', ['홍길동'], { includeEditTrace: true });
+searchHangulDetailed('길', ['홍길동'], { includeEditTrace: true });
 ```
 
 ### CommonJS (`require`)
 
 ```js
-const { searchRanked, searchDetailed } = require('hangul-search');
+const { searchHangulRanked, searchHangulDetailed } = require('hangul-search');
 
-searchRanked('홍길', ['홍길동', '서울']);
+searchHangulRanked('홍길', ['홍길동', '서울']);
 ```
 
 같은 애플리케이션 안에서 **ESM `import`와 CJS `require`로 이 패키지를 동시에** 불러오면 [듀얼 패키지 이슈(dual package hazard)](https://nodejs.org/api/packages.html#dual-package-hazard)가 생길 수 있습니다. **한 가지 모듈 형식만** 쓰는 것을 권장합니다.
@@ -47,7 +47,7 @@ searchRanked('홍길', ['홍길동', '서울']);
 ```html
 <script src="./node_modules/hangul-search/dist/index.global.cjs"></script>
 <script>
-  const hits = hangulSearch.searchRanked('홍길', ['홍길동', '서울']);
+  const hits = hangulSearch.searchHangulRanked('홍길', ['홍길동', '서울']);
 </script>
 ```
 
@@ -55,8 +55,8 @@ searchRanked('홍길', ['홍길동', '서울']);
 
 ## API 요약
 
-- **`searchRanked(query, candidates, options?)`** — 통과한 후보만 점수 내림차순(`value`, `score`만).
-- **`searchDetailed(...)`** — 동일 정렬 + `subsequenceAlignments`, `editDistance`(부분열 실패 시 `null`), 선택 `editTrace`.
+- **`searchHangulRanked(query, candidates, options?)`** — 통과한 후보만 점수 내림차순(`value`, `score`만).
+- **`searchHangulDetailed(...)`** — 동일 정렬 + `subsequenceAlignments`, `editDistance`(부분열 실패 시 `null`), 선택 `editTrace`.
 - 저수준: `matchSubsequenceKo`, `levenshteinKo`, `rankByKoPipeline`, 한글 분해·초성 유틸 등은 패키지 엔트리에서 re-export.
 
 ## 제약·메모

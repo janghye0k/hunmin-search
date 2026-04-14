@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { searchRanked } from '../src/api/index';
+import { searchHangulRanked } from '../src/api/index';
 
 /** 스냅샷 안정화: 부동 소수 점수를 고정 자릿수로 반올림 */
 function stabilize(hits: { value: string; score: number }[]) {
@@ -28,8 +28,8 @@ const SNAPSHOT_SCENARIOS: { id: string; query: string; candidates: string[] }[] 
   { id: 'long-query', query: '검색엔진', candidates: ['검색', '한국검색엔진', '검색엔진최적화', '엔진검색'] },
 ];
 
-describe('searchRanked snapshot (ordering + normalized scores)', () => {
+describe('searchHangulRanked snapshot (ordering + normalized scores)', () => {
   it.each(SNAPSHOT_SCENARIOS)('$id', ({ query, candidates }) => {
-    expect(stabilize(searchRanked(query, candidates))).toMatchSnapshot();
+    expect(stabilize(searchHangulRanked(query, candidates))).toMatchSnapshot();
   });
 });
