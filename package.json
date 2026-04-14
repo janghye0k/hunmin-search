@@ -2,18 +2,54 @@
   "name": "hangul-search",
   "version": "0.0.1",
   "private": true,
+  "description": "Hangul fuzzy search: subsequence filter + Korean-aware Levenshtein scoring. Zero runtime dependencies.",
+  "license": "MIT",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "hangul",
+    "korean",
+    "search",
+    "fuzzy",
+    "levenshtein",
+    "subsequence"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./browser": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.global.cjs"
     }
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "build": "tsup",
+    "prepack": "pnpm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:browser": "playwright test",
+    "publint": "publint",
+    "attw": "attw --pack . --profile node16",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
@@ -26,8 +62,12 @@
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.2",
+    "tsup": "^8.5.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.58.1",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@playwright/test": "^1.49.0",
+    "publint": "^0.3.2"
   }
 }

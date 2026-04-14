@@ -1,7 +1,6 @@
 import { levenshteinKoTrace, type LevenshteinKoOptions, type LevenshteinKoTraceResult } from '../score/levenshtein-ko';
 import { rankByKoPipeline, type KoPipelineOptions } from '../score/pipeline';
 import type { SubsequenceMatchKind } from '../score/subsequence';
-
 export interface SubsequenceAlignment {
   /** UTF-16 code unit index in `query`. */
   queryIndex: number;

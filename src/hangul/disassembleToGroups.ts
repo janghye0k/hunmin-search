@@ -1,14 +1,6 @@
 import { DISASSEMBLED_CONSONANTS_BY_CONSONANT, DISASSEMBLED_VOWELS_BY_VOWEL } from '../constants/hangul';
 import { disassembleCompleteCharacter } from './disassembleCompleteCharacter';
 
-function hasConsonantEntry(letter: string): letter is keyof typeof DISASSEMBLED_CONSONANTS_BY_CONSONANT {
-  return Object.prototype.hasOwnProperty.call(DISASSEMBLED_CONSONANTS_BY_CONSONANT, letter);
-}
-
-function hasVowelEntry(letter: string): letter is keyof typeof DISASSEMBLED_VOWELS_BY_VOWEL {
-  return Object.prototype.hasOwnProperty.call(DISASSEMBLED_VOWELS_BY_VOWEL, letter);
-}
-
 export function disassembleToGroups(str: string): string[][] {
   const result: string[][] = [];
 
@@ -24,14 +16,15 @@ export function disassembleToGroups(str: string): string[][] {
       continue;
     }
 
-    if (hasConsonantEntry(letter)) {
-      const disassembledConsonant = DISASSEMBLED_CONSONANTS_BY_CONSONANT[letter];
+    if (Object.prototype.hasOwnProperty.call(DISASSEMBLED_CONSONANTS_BY_CONSONANT, letter)) {
+      const disassembledConsonant =
+        DISASSEMBLED_CONSONANTS_BY_CONSONANT[letter as keyof typeof DISASSEMBLED_CONSONANTS_BY_CONSONANT];
       result.push([...disassembledConsonant]);
       continue;
     }
 
-    if (hasVowelEntry(letter)) {
-      const disassembledVowel = DISASSEMBLED_VOWELS_BY_VOWEL[letter];
+    if (Object.prototype.hasOwnProperty.call(DISASSEMBLED_VOWELS_BY_VOWEL, letter)) {
+      const disassembledVowel = DISASSEMBLED_VOWELS_BY_VOWEL[letter as keyof typeof DISASSEMBLED_VOWELS_BY_VOWEL];
       result.push([...disassembledVowel]);
       continue;
     }

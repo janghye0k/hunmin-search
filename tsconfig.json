@@ -6,12 +6,7 @@
     "lib": ["ES2022"],
     "strict": true,
     "skipLibCheck": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "noEmitOnError": true,
+    "noEmit": true,
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*.ts"],
