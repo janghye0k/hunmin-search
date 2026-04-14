@@ -7,7 +7,7 @@
 ## 문서
 
 - **한국어 허브**: [docs/ko/README.md](./docs/ko/README.md) · **English hub**: [docs/en/README.md](./docs/en/README.md)
-- **공개 API 목록(동결)**: [docs/api-surface.md](./docs/api-surface.md)
+- **공개 API 목록**: [docs/api-surface.md](./docs/api-surface.md)
 - npm **배포 tarball**에는 `dist/`, `README.md`(한국어), `LICENSE`만 들어갑니다(`package.json` `files`). 영어 개요는 저장소의 [`English-README.md`](./English-README.md)이며, 상세 문서는 `docs/`에 있습니다. 레지스트리 웹에서 `./docs/...` 링크가 깨지면 Git 호스팅에서 열거나 [docs/DOCUMENTATION_LINKS.md](./docs/DOCUMENTATION_LINKS.md)의 절대 URL 패턴을 쓰세요.
 
 ## 요구 사항

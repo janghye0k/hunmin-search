@@ -1,4 +1,4 @@
-# Public API surface (frozen)
+# Public API surface 
 
 Canonical list for documentation and regression tests. **`src/index.ts`** is the single source of re-exports; runtime exports are additionally enforced by `test/api-surface.test.ts`.
 

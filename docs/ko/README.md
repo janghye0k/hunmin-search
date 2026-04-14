@@ -6,6 +6,7 @@
 
 | 문서 | 내용 |
 |------|------|
+| [npm-publish.md](./npm-publish.md) | npm 배포 절차 (저장소 운영자용) |
 | [api-search.md](./api-search.md) | `searchKoRanked`, `searchKoDetailed` |
 | [api-hangul.md](./api-hangul.md) | 분해·초성 유틸 |
 | [api-korean.md](./api-korean.md) | 한글·자모 판별·유사도 |
