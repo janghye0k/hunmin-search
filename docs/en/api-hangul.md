@@ -7,7 +7,7 @@ Sources: [`src/hangul/`](../../src/hangul/)
 Flattens each user-perceived character to jamo (and pass-through for non-Hangul) into **one concatenated string**. Built on [`disassembleToGroups`](../../src/hangul/disassembleToGroups.ts).
 
 ```ts
-import { disassemble } from 'hangul-search';
+import { disassemble } from 'hunmin-search';
 
 disassemble('가'); // 'ㄱㅏ'
 ```

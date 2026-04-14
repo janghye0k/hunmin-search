@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { disassemble, getChoseong } from '../src/hangul/index';
 import { isSimilar } from '../src/korean/index';
-import { searchHangulDetailed, searchHangulRanked } from '../src/api/index';
+import { searchKoDetailed, searchKoRanked } from '../src/api/index';
 
 /**
  * 경계·혼합 문자열·한글 코어·유사도 회귀 (통합 관점).
@@ -27,32 +27,32 @@ describe('boundaries — kled-style similarity (pipeline-relevant)', () => {
   });
 });
 
-describe('boundaries — searchHangulRanked / searchHangulDetailed', () => {
+describe('boundaries — searchKoRanked / searchKoDetailed', () => {
   it('empty candidates → empty array', () => {
-    expect(searchHangulRanked('a', [])).toEqual([]);
-    expect(searchHangulDetailed('a', [])).toEqual([]);
+    expect(searchKoRanked('a', [])).toEqual([]);
+    expect(searchKoDetailed('a', [])).toEqual([]);
   });
 
   it('empty query: all candidates pass subsequence; score 0; tie-break by ascending edit distance', () => {
-    const out = searchHangulRanked('', ['ccc', 'a', 'bb']);
+    const out = searchKoRanked('', ['ccc', 'a', 'bb']);
     expect(out.map((h) => h.value)).toEqual(['a', 'bb', 'ccc']);
     expect(out.every((h) => h.score === 0)).toBe(true);
   });
 
   it('does not throw on surrogate / emoji (UTF-16 code units)', () => {
-    const out = searchHangulRanked('ab', ['a😀b', 'xab', '😀ab']);
+    const out = searchKoRanked('ab', ['a😀b', 'xab', '😀ab']);
     expect(out.length).toBeGreaterThan(0);
     expect(out.every((h) => typeof h.score === 'number')).toBe(true);
   });
 
   it('mixed Latin + Hangul subsequence + ranking', () => {
-    const out = searchHangulRanked('hello한', ['hello한글', 'hello', 'zzhello한']);
+    const out = searchKoRanked('hello한', ['hello한글', 'hello', 'zzhello한']);
     expect(out.map((h) => h.value)).toContain('hello한글');
     expect(out[0]!.score).toBeGreaterThanOrEqual(out[out.length - 1]!.score);
   });
 
-  it('searchHangulDetailed reports UTF-16 indices through emoji prefix', () => {
-    const out = searchHangulDetailed('ab', ['a😀b']);
+  it('searchKoDetailed reports UTF-16 indices through emoji prefix', () => {
+    const out = searchKoDetailed('ab', ['a😀b']);
     expect(out).toHaveLength(1);
     const aln = out[0]!.subsequenceAlignments;
     expect(aln[0]).toMatchObject({ queryIndex: 0, targetIndex: 0, kind: 'exact' });

@@ -21,7 +21,7 @@
 - **`includeNonMatching`**: 실패 후보도 `ok: false`, `score: 0`, `editDistance: null`로 유지.
 
 ```ts
-import { matchSubsequenceKo, levenshteinKo, rankByKoPipeline } from 'hangul-search';
+import { matchSubsequenceKo, levenshteinKo, rankByKoPipeline } from 'hunmin-search';
 
 matchSubsequenceKo('길', '홍길동').ok;
 levenshteinKo('A학급', 'B학급');

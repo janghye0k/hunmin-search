@@ -1,4 +1,4 @@
-# hangul-search
+# Hunmin Search (`hunmin-search`)
 
 **English** · [한국어 README](./README.md)
 
@@ -18,10 +18,10 @@ A small library for **subsequence filtering** and **Korean-relaxed Levenshtein**
 
 ## Install
 
-Use as a local path or Git dependency. For npm publishing, clear `private` in `package.json` and fill metadata such as `repository`.
+Use as a local path, Git dependency, or install from npm with `pnpm add hunmin-search`. Versioning, changelog, and manual publish steps follow [docs/plan-npm-manual-publish.md](./docs/plan-npm-manual-publish.md).
 
 ```bash
-pnpm add ./path/to/hangul-search
+pnpm add ./path/to/hunmin-search
 # or after build: pnpm pack → install .tgz
 ```
 
@@ -32,41 +32,41 @@ The publish tarball includes only `dist/`, `README.md`, and `LICENSE` (`files`).
 ### ESM (`import`)
 
 ```js
-import { searchHangulRanked, searchHangulDetailed } from 'hangul-search';
+import { searchKoRanked, searchKoDetailed } from 'hunmin-search';
 
-searchHangulRanked('홍길', ['홍길동', '서울']);
+searchKoRanked('홍길', ['홍길동', '서울']);
 // [{ value: '홍길동', score: number }]
 
-searchHangulDetailed('길', ['홍길동'], { includeEditTrace: true });
+searchKoDetailed('길', ['홍길동'], { includeEditTrace: true });
 ```
 
 ### CommonJS (`require`)
 
 ```js
-const { searchHangulRanked, searchHangulDetailed } = require('hangul-search');
+const { searchKoRanked, searchKoDetailed } = require('hunmin-search');
 
-searchHangulRanked('홍길', ['홍길동', '서울']);
+searchKoRanked('홍길', ['홍길동', '서울']);
 ```
 
 Loading this package with **both ESM `import` and CJS `require` in one app** can trigger the [dual package hazard](https://nodejs.org/api/packages.html#dual-package-hazard). Prefer **one module system**.
 
 ## Browser (no bundler)
 
-Loading `dist/index.global.cjs` exposes the global **`hangulSearch`** (tsup `globalName`).
+Loading `dist/index.global.cjs` exposes the global **`HunminSearch`** (tsup `globalName`).
 
 ```html
-<script src="./node_modules/hangul-search/dist/index.global.cjs"></script>
+<script src="./node_modules/hunmin-search/dist/index.global.cjs"></script>
 <script>
-  const hits = hangulSearch.searchHangulRanked('홍길', ['홍길동', '서울']);
+  const hits = HunminSearch.searchKoRanked('홍길', ['홍길동', '서울']);
 </script>
 ```
 
-Paths vary by installer / monorepo layout. With Vite or Webpack, prefer the `package.json` **`hangul-search/browser`** export subpath.
+Paths vary by installer / monorepo layout. With Vite or Webpack, prefer the `package.json` **`hunmin-search/browser`** export subpath.
 
 ## API summary
 
-- **`searchHangulRanked(query, candidates, options?)`** — only subsequence-passing candidates, sorted by descending score (`value`, `score` only).
-- **`searchHangulDetailed(...)`** — same ordering plus `subsequenceAlignments`, `editDistance` (`null` on subsequence failure), optional `editTrace`.
+- **`searchKoRanked(query, candidates, options?)`** — only subsequence-passing candidates, sorted by descending score (`value`, `score` only).
+- **`searchKoDetailed(...)`** — same ordering plus `subsequenceAlignments`, `editDistance` (`null` on subsequence failure), optional `editTrace`.
 - Lower level: `matchSubsequenceKo`, `levenshteinKo`, `rankByKoPipeline`, Hangul disassembly / choseong helpers are re-exported from the package entry.
 
 ## Constraints

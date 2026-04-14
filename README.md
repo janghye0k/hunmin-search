@@ -1,4 +1,4 @@
-# hangul-search
+# Hunmin Search (`hunmin-search`)
 
 [English README](./English-README.md) (파일명은 npm 자동 포함 규칙 회피용입니다.)
 
@@ -16,10 +16,10 @@
 
 ## 설치
 
-로컬 패키지나 Git 의존성으로 연결해 사용합니다. npm에 공개 배포 시 `package.json`의 `private` 필드를 조정하고 `repository` 등 메타데이터를 채우세요.
+로컬 패키지나 Git 의존성으로 연결하거나, npm에서 `pnpm add hunmin-search`로 설치합니다. 버전·CHANGELOG·수동 배포 절차는 [docs/plan-npm-manual-publish.md](./docs/plan-npm-manual-publish.md)를 따릅니다.
 
 ```bash
-pnpm add ./path/to/hangul-search
+pnpm add ./path/to/hunmin-search
 # 또는 빌드 후: pnpm pack → .tgz 설치
 ```
 
@@ -30,41 +30,41 @@ pnpm add ./path/to/hangul-search
 ### ESM (`import`)
 
 ```js
-import { searchHangulRanked, searchHangulDetailed } from 'hangul-search';
+import { searchKoRanked, searchKoDetailed } from 'hunmin-search';
 
-searchHangulRanked('홍길', ['홍길동', '서울']);
+searchKoRanked('홍길', ['홍길동', '서울']);
 // [{ value: '홍길동', score: number }]
 
-searchHangulDetailed('길', ['홍길동'], { includeEditTrace: true });
+searchKoDetailed('길', ['홍길동'], { includeEditTrace: true });
 ```
 
 ### CommonJS (`require`)
 
 ```js
-const { searchHangulRanked, searchHangulDetailed } = require('hangul-search');
+const { searchKoRanked, searchKoDetailed } = require('hunmin-search');
 
-searchHangulRanked('홍길', ['홍길동', '서울']);
+searchKoRanked('홍길', ['홍길동', '서울']);
 ```
 
 같은 애플리케이션 안에서 **ESM `import`와 CJS `require`로 이 패키지를 동시에** 불러오면 [듀얼 패키지 이슈(dual package hazard)](https://nodejs.org/api/packages.html#dual-package-hazard)가 생길 수 있습니다. **한 가지 모듈 형식만** 쓰는 것을 권장합니다.
 
 ## 브라우저에서 쓰기
 
-번들러 없이 스크립트만 넣는 경우, 빌드 산출물 `dist/index.global.cjs`를 로드하면 전역 객체 **`hangulSearch`**(tsup `globalName`)가 생깁니다.
+번들러 없이 스크립트만 넣는 경우, 빌드 산출물 `dist/index.global.cjs`를 로드하면 전역 객체 **`HunminSearch`**(tsup `globalName`)가 생깁니다.
 
 ```html
-<script src="./node_modules/hangul-search/dist/index.global.cjs"></script>
+<script src="./node_modules/hunmin-search/dist/index.global.cjs"></script>
 <script>
-  const hits = hangulSearch.searchHangulRanked('홍길', ['홍길동', '서울']);
+  const hits = HunminSearch.searchKoRanked('홍길', ['홍길동', '서울']);
 </script>
 ```
 
-실제 경로는 설치 도구·모노레포 구조에 따라 달라질 수 있습니다. Vite·Webpack 등에서는 `package.json`의 `exports` 필드 **`hangul-search/browser`** 서브패스를 쓰는 편이 낫습니다.
+실제 경로는 설치 도구·모노레포 구조에 따라 달라질 수 있습니다. Vite·Webpack 등에서는 `package.json`의 `exports` 필드 **`hunmin-search/browser`** 서브패스를 쓰는 편이 낫습니다.
 
 ## API 요약
 
-- **`searchHangulRanked(query, candidates, options?)`** — 통과한 후보만 점수 내림차순(`value`, `score`만).
-- **`searchHangulDetailed(...)`** — 동일 정렬 + `subsequenceAlignments`, `editDistance`(부분열 실패 시 `null`), 선택 `editTrace`.
+- **`searchKoRanked(query, candidates, options?)`** — 통과한 후보만 점수 내림차순(`value`, `score`만).
+- **`searchKoDetailed(...)`** — 동일 정렬 + `subsequenceAlignments`, `editDistance`(부분열 실패 시 `null`), 선택 `editTrace`.
 - 저수준: `matchSubsequenceKo`, `levenshteinKo`, `rankByKoPipeline`, 한글 분해·초성 유틸 등은 패키지 엔트리에서 re-export.
 
 ## 제약·메모

@@ -24,11 +24,11 @@ Relative links on the registry page resolve against `https://www.npmjs.com/`, so
 
 **Recommended pattern** after you set `package.json` `repository`:
 
-1. Parse `repository.url` (e.g. `git+https://github.com/ORG/REPO.git` or `https://github.com/ORG/REPO`).
-2. Normalize to `https://github.com/ORG/REPO`.
+1. Parse `repository.url` (e.g. `git+https://github.com/janghye0k/hunmin-search.git` or `https://github.com/janghye0k/hunmin-search`).
+2. Normalize to `https://github.com/janghye0k/hunmin-search`.
 3. Append blob path for the default branch (usually `main`):
 
-`https://github.com/ORG/REPO/blob/main/docs/ko/README.md`
+`https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/README.md`
 
 Until `repository` is filled in, point readers to “open the same paths in your Git host” or paste the final URL manually in `README.md` when publishing.
 
@@ -38,10 +38,9 @@ Until `repository` is filled in, point readers to “open the same paths in your
 {
   "repository": {
     "type": "git",
-    "url": "https://github.com/ORG/hangul-search.git"
+    "url": "git+https://github.com/janghye0k/hunmin-search.git"
   },
-  "homepage": "https://github.com/ORG/hangul-search#readme"
+  "homepage": "https://github.com/janghye0k/hunmin-search#readme"
 }
 ```
 
-Adjust `ORG` and repo name to match your project.

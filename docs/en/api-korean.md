@@ -15,7 +15,7 @@ Jamo / syllable checks and the **`isSimilar`** relation used by subsequence matc
 | `isSimilar(a, b)` | equal, or same consonant row for jamo, or same syllable body ignoring finals |
 
 ```ts
-import { isSimilar, hasFinal } from 'hangul-search';
+import { isSimilar, hasFinal } from 'hunmin-search';
 
 isSimilar('가', '강'); // true
 hasFinal('강'); // true

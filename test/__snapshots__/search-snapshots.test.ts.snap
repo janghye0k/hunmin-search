@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'case-insensitive' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'case-insensitive' 1`] = `
 [
   {
     "score": 1,
@@ -17,7 +17,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'case-inse
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'english-korean' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'english-korean' 1`] = `
 [
   {
     "score": 0.625,
@@ -30,7 +30,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'english-k
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'frontend' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'frontend' 1`] = `
 [
   {
     "score": 1,
@@ -43,7 +43,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'frontend'
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'gang' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'gang' 1`] = `
 [
   {
     "score": 1,
@@ -64,7 +64,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'gang' 1`]
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'gildong' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'gildong' 1`] = `
 [
   {
     "score": 0.66666667,
@@ -81,7 +81,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'gildong' 
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'hakgeup' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'hakgeup' 1`] = `
 [
   {
     "score": 1,
@@ -102,7 +102,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'hakgeup' 
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'hong-gil' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'hong-gil' 1`] = `
 [
   {
     "score": 0.66666667,
@@ -115,7 +115,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'hong-gil'
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'jamo-hg' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'jamo-hg' 1`] = `
 [
   {
     "score": 0.99,
@@ -136,7 +136,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'jamo-hg' 
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'korean-partial' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'korean-partial' 1`] = `
 [
   {
     "score": 1,
@@ -149,7 +149,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'korean-pa
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'long-query' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'long-query' 1`] = `
 [
   {
     "score": 0.66666667,
@@ -162,7 +162,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'long-quer
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'numeric-mixed' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'numeric-mixed' 1`] = `
 [
   {
     "score": 1,
@@ -179,7 +179,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'numeric-m
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'react' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'react' 1`] = `
 [
   {
     "score": 1,
@@ -192,7 +192,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'react' 1`
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'seoul' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'seoul' 1`] = `
 [
   {
     "score": 0.66666667,
@@ -205,7 +205,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'seoul' 1`
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'single-char-tie' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'single-char-tie' 1`] = `
 [
   {
     "score": 1,
@@ -226,7 +226,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'single-ch
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'spaces' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'spaces' 1`] = `
 [
   {
     "score": 0.75,
@@ -239,7 +239,7 @@ exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'spaces' 1
 ]
 `;
 
-exports[`searchHangulRanked snapshot (ordering + normalized scores) > 'subsequence-abc' 1`] = `
+exports[`searchKoRanked snapshot (ordering + normalized scores) > 'subsequence-abc' 1`] = `
 [
   {
     "score": 1,

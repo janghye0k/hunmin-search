@@ -16,7 +16,7 @@ export interface SubsequenceAlignment {
 }
 
 /**
- * Options for {@link searchHangulDetailed} (extends {@link KoPipelineOptions}).
+ * Options for {@link searchKoDetailed} (extends {@link KoPipelineOptions}).
  *
  * `includeEditTrace`가 `true`이면 부분열을 통과한 후보만 Levenshtein 역추적(`editTrace`)을 추가 계산합니다.
  */
@@ -42,21 +42,21 @@ export interface SearchDetailedHit {
 }
 
 /**
- * Same ranking as {@link searchHangulRanked}, plus per-candidate alignment and optional Levenshtein backtrace.
+ * Same ranking as {@link searchKoRanked}, plus per-candidate alignment and optional Levenshtein backtrace.
  *
  * **Performance:** Same cost model as {@link rankByKoPipeline} (see there). Bound `candidates` count and
  * string lengths at the call site for large inputs.
  *
- * {@link searchHangulRanked}와 동일한 정렬을 유지하면서, 후보마다 부분열 정렬 정보와 선택적으로 편집 역추적을 돌려줍니다.
+ * {@link searchKoRanked}와 동일한 정렬을 유지하면서, 후보마다 부분열 정렬 정보와 선택적으로 편집 역추적을 돌려줍니다.
  *
  * @example
  * 다음 예는 부분열 정렬과 선택적 `editTrace`를 켜는 방법을 보여줍니다.
  *
  * ```ts
- * searchHangulDetailed('길', ['홍길동'], { includeEditTrace: true });
+ * searchKoDetailed('길', ['홍길동'], { includeEditTrace: true });
  * ```
  */
-export function searchHangulDetailed(
+export function searchKoDetailed(
   query: string,
   candidates: string[],
   options?: SearchDetailedOptions

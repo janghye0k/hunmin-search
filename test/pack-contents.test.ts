@@ -23,7 +23,7 @@ describe('npm pack contents (Phase 5)', () => {
   });
 
   it('packs dist, README.md, LICENSE, package.json only (no docs/ or extra English readme)', () => {
-    const dest = mkdtempSync(join(tmpdir(), 'hangul-search-pack-'));
+    const dest = mkdtempSync(join(tmpdir(), 'hunmin-search-pack-'));
     try {
       execSync(`pnpm pack --pack-destination "${dest}"`, {
         cwd: root,

@@ -8,7 +8,7 @@ import {
   levenshteinKo,
   matchSubsequenceKo,
   rankByKoPipeline,
-  searchHangulRanked,
+  searchKoRanked,
 } from '../src/index';
 
 describe('package entry exports', () => {
@@ -30,6 +30,6 @@ describe('package entry exports', () => {
   });
 
   it('re-exports public search API', () => {
-    expect(searchHangulRanked('홍길', ['홍길동', '서울'])[0]?.value).toBe('홍길동');
+    expect(searchKoRanked('홍길', ['홍길동', '서울'])[0]?.value).toBe('홍길동');
   });
 });

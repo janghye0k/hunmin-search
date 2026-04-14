@@ -1,8 +1,8 @@
 {
-  "name": "hangul-search",
+  "name": "hunmin-search",
   "version": "0.1.0",
-  "private": true,
-  "description": "Hangul fuzzy search: subsequence filter + Korean-aware Levenshtein scoring. Zero runtime dependencies.",
+  "private": false,
+  "description": "Hunmin Search — Korean fuzzy search: subsequence filter + Korean-aware Levenshtein scoring. Zero runtime dependencies.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -11,12 +11,21 @@
   },
   "keywords": [
     "hangul",
+    "hunmin",
     "korean",
     "search",
     "fuzzy",
     "levenshtein",
     "subsequence"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janghye0k/hunmin-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/janghye0k/hunmin-search/issues"
+  },
+  "homepage": "https://github.com/janghye0k/hunmin-search#readme",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "exports": {
@@ -50,24 +59,32 @@
     "test:browser": "playwright test",
     "publint": "publint",
     "attw": "attw --pack . --profile node16",
+    "publish:check": "pnpm run typecheck && pnpm run build && pnpm test && pnpm run publint && pnpm run attw",
+    "publish:dry-run": "pnpm publish --dry-run --no-git-checks --access public",
+    "prepublish:safe": "pnpm run typecheck && pnpm run build && pnpm exec vitest run --exclude test/pack-contents.test.ts && pnpm run publint",
+    "prepublishOnly": "pnpm run prepublish:safe",
+    "release": "commit-and-tag-version",
+    "release:minor": "commit-and-tag-version --release-as minor",
+    "release:major": "commit-and-tag-version --release-as major",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^3.0.0",
+    "commit-and-tag-version": "^12.7.1",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.2",
+    "publint": "^0.3.2",
     "tsup": "^8.5.1",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.58.1",
-    "vitest": "^3.0.0",
-    "@arethetypeswrong/cli": "^0.17.4",
-    "@playwright/test": "^1.49.0",
-    "publint": "^0.3.2"
+    "vitest": "^3.0.0"
   }
 }

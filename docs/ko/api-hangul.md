@@ -7,7 +7,7 @@
 완성형·호환 자모 등을 자모 단위로 풀어 **한 줄 문자열**로 이어 붙입니다. 내부적으로 [`disassembleToGroups`](../../src/hangul/disassembleToGroups.ts)를 사용합니다.
 
 ```ts
-import { disassemble } from 'hangul-search';
+import { disassemble } from 'hunmin-search';
 
 disassemble('가'); // 'ㄱㅏ'
 ```

@@ -1,8 +1,8 @@
 # Search API
 
-Sources: [`src/api/searchHangulRanked.ts`](../../src/api/searchHangulRanked.ts), [`src/api/searchHangulDetailed.ts`](../../src/api/searchHangulDetailed.ts)
+Sources: [`src/api/searchKoRanked.ts`](../../src/api/searchKoRanked.ts), [`src/api/searchKoDetailed.ts`](../../src/api/searchKoDetailed.ts)
 
-## `searchHangulRanked(query, candidates, options?)`
+## `searchKoRanked(query, candidates, options?)`
 
 - **Role**: subsequence filter → Korean-aware Levenshtein → descending `score` sort.
 - **Returns**: `{ value, score }[]`. Non-passing candidates are dropped unless `includeNonMatching` keeps them at score `0`.
@@ -10,21 +10,21 @@ Sources: [`src/api/searchHangulRanked.ts`](../../src/api/searchHangulRanked.ts),
 - **Cost**: linear in candidate count; per candidate subsequence scan plus `O(|query|×|candidate|)` DP. Bound lengths and batch size at the call site.
 
 ```ts
-import { searchHangulRanked } from 'hangul-search';
+import { searchKoRanked } from 'hunmin-search';
 
-searchHangulRanked('홍길', ['홍길동', '서울']);
+searchKoRanked('홍길', ['홍길동', '서울']);
 ```
 
-## `searchHangulDetailed(query, candidates, options?)`
+## `searchKoDetailed(query, candidates, options?)`
 
 - **Role**: same ordering as ranked search, plus per-candidate alignment, edit distance, and optional Levenshtein trace.
 - **`editDistance`**: `null` when subsequence fails (`includeNonMatching`).
 - **`includeEditTrace`**: when `true`, runs `levenshteinKoTrace` for passing candidates (extra cost).
 
 ```ts
-import { searchHangulDetailed } from 'hangul-search';
+import { searchKoDetailed } from 'hunmin-search';
 
-searchHangulDetailed('길', ['홍길동'], { includeEditTrace: true });
+searchKoDetailed('길', ['홍길동'], { includeEditTrace: true });
 ```
 
 ## Related types

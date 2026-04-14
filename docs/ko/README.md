@@ -1,4 +1,4 @@
-# hangul-search 문서 (한국어)
+# hunmin-search 문서 (한국어)
 
 계획서: [plan-user-documentation.md](../plan-user-documentation.md) · 공개 API 목록: [api-surface.md](../api-surface.md) · 링크 규칙: [DOCUMENTATION_LINKS.md](../DOCUMENTATION_LINKS.md)
 
@@ -6,7 +6,7 @@
 
 | 문서 | 내용 |
 |------|------|
-| [api-search.md](./api-search.md) | `searchHangulRanked`, `searchHangulDetailed` |
+| [api-search.md](./api-search.md) | `searchKoRanked`, `searchKoDetailed` |
 | [api-hangul.md](./api-hangul.md) | 분해·초성 유틸 |
 | [api-korean.md](./api-korean.md) | 한글·자모 판별·유사도 |
 | [api-score.md](./api-score.md) | 부분열, 한글 완화 Levenshtein, 파이프라인 |

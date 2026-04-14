@@ -6,8 +6,8 @@ Canonical list for documentation and regression tests. **`src/index.ts`** is the
 
 | Symbol | Area |
 |--------|------|
-| `searchHangulRanked` | Search |
-| `searchHangulDetailed` | Search |
+| `searchKoRanked` | Search |
+| `searchKoDetailed` | Search |
 | `disassemble` | Hangul |
 | `disassembleCompleteCharacter` | Hangul |
 | `disassembleToGroups` | Hangul |

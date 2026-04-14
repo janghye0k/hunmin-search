@@ -21,7 +21,7 @@ Sources: [`src/score/subsequence.ts`](../../src/score/subsequence.ts), [`src/sco
 - **`includeNonMatching`**: keep failing rows with `ok: false`, `score: 0`, `editDistance: null`.
 
 ```ts
-import { matchSubsequenceKo, levenshteinKo, rankByKoPipeline } from 'hangul-search';
+import { matchSubsequenceKo, levenshteinKo, rankByKoPipeline } from 'hunmin-search';
 
 matchSubsequenceKo('길', '홍길동').ok;
 levenshteinKo('A학급', 'B학급');

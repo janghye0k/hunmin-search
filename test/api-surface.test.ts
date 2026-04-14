@@ -19,8 +19,8 @@ const EXPECTED_RUNTIME_EXPORTS = [
   'levenshteinKoTrace',
   'matchSubsequenceKo',
   'rankByKoPipeline',
-  'searchHangulDetailed',
-  'searchHangulRanked',
+  'searchKoDetailed',
+  'searchKoRanked',
 ] as const;
 
 describe('public API surface (runtime)', () => {

@@ -64,7 +64,7 @@ describe('Bundler, src layout, and dist smoke', () => {
     const entry = join(root, 'dist', 'index.js');
     expect(existsSync(entry)).toBe(true);
     const mod = await import(pathToFileURL(entry).href);
-    expect(typeof mod.searchHangulRanked).toBe('function');
+    expect(typeof mod.searchKoRanked).toBe('function');
     expect(typeof mod.matchSubsequenceKo).toBe('function');
   });
 
@@ -72,8 +72,8 @@ describe('Bundler, src layout, and dist smoke', () => {
     const entry = join(root, 'dist', 'index.cjs');
     expect(existsSync(entry)).toBe(true);
     const require = createRequire(import.meta.url);
-    const mod = require(entry) as { searchHangulRanked?: unknown };
-    expect(typeof mod.searchHangulRanked).toBe('function');
+    const mod = require(entry) as { searchKoRanked?: unknown };
+    expect(typeof mod.searchKoRanked).toBe('function');
   });
 });
 
@@ -121,16 +121,16 @@ describe('README and LICENSE contract', () => {
     expect(existsSync(licensePath)).toBe(true);
   });
 
-  it('documents Node ESM and CJS consumption with hangul-search entry', () => {
+  it('documents Node ESM and CJS consumption with hunmin-search entry', () => {
     const body = readFileSync(readmePath, 'utf8');
-    expect(body).toMatch(/from\s+['"]hangul-search['"]/);
-    expect(body).toMatch(/require\s*\(\s*['"]hangul-search['"]\s*\)/);
+    expect(body).toMatch(/from\s+['"]hunmin-search['"]/);
+    expect(body).toMatch(/require\s*\(\s*['"]hunmin-search['"]\s*\)/);
   });
 
-  it('documents browser IIFE path, bundle file name, and globalName hangulSearch', () => {
+  it('documents browser IIFE path, bundle file name, and globalName HunminSearch', () => {
     const body = readFileSync(readmePath, 'utf8');
     expect(body).toMatch(/index\.global\.cjs/);
-    expect(body).toMatch(/hangulSearch/);
+    expect(body).toMatch(/HunminSearch/);
     expect(body).toMatch(/<script/i);
   });
 

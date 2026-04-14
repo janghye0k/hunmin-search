@@ -27,7 +27,7 @@ export default defineConfig([
     splitting: false,
     platform: 'browser',
     target: 'es2022',
-    globalName: 'hangulSearch',
+    globalName: 'HunminSearch',
     outExtension() {
       return { js: '.global.cjs' };
     },
