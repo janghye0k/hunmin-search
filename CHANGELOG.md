@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.2](https://github.com/janghye0k/hunmin-search/compare/v0.1.1...v0.1.2) (2026-07-14)
+
+
+### Bug Fixes
+
+* tar test compat, optimize levenshteinKo DP, fix docs, add benchmarks ([036dec7](https://github.com/janghye0k/hunmin-search/commit/036dec727a4dc1f64cc22a7753ea695efe134882))
+
 ## 0.1.1 (2026-04-14)
 
 
