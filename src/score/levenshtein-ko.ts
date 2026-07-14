@@ -49,6 +49,35 @@ function fillLevenshteinKoTable(s1: string, s2: string, similarCost: number): nu
   return table;
 }
 
+function levenshteinKoDistance(a: string, b: string, similarCost: number): number {
+  const [s1, s2] = a.length <= b.length ? [a, b] : [b, a];
+  const cols = s1.length + 1;
+  let prev = Array.from({ length: cols }, (_, n) => n);
+  let curr = new Array<number>(cols);
+
+  for (let i = 1; i <= s2.length; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= s1.length; j++) {
+      const bChar = s2[i - 1]!;
+      const aChar = s1[j - 1]!;
+      let korSimilarity = 0;
+
+      if (bChar !== aChar && isKorean(aChar) && isKorean(bChar) && isSimilar(aChar, bChar)) {
+        korSimilarity = similarCost;
+      }
+
+      if (korSimilarity > 0 || bChar === aChar) {
+        curr[j] = prev[j - 1]! + korSimilarity;
+      } else {
+        curr[j] = Math.min(prev[j - 1]! + 1, curr[j - 1]! + 1, prev[j]! + 1);
+      }
+    }
+    [prev, curr] = [curr, prev];
+  }
+
+  return prev[s1.length]!;
+}
+
 /**
  * Levenshtein distance between two strings with a small discount when two Korean
  * characters are considered “similar” (kled-js behavior).
@@ -78,8 +107,7 @@ export function levenshteinKo(a: string, b: string, options: LevenshteinKoOption
 
   if (s1 === s2) return 0;
 
-  const table = fillLevenshteinKoTable(s1, s2, similarCost);
-  return table[s2.length]![s1.length]!;
+  return levenshteinKoDistance(s1, s2, similarCost);
 }
 
 /** One step in the reconstructed edit path for {@link levenshteinKoTrace}. */

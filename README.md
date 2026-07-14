@@ -16,7 +16,7 @@
 
 ## 설치
 
-로컬 패키지나 Git 의존성으로 연결하거나, npm에서 `pnpm add hunmin-search`로 설치합니다. 버전·CHANGELOG·수동 배포 절차는 [docs/plan-npm-manual-publish.md](./docs/plan-npm-manual-publish.md)를 따릅니다.
+로컬 패키지나 Git 의존성으로 연결하거나, npm에서 `pnpm add hunmin-search`로 설치합니다. 버전·CHANGELOG는 [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md), 배포 절차는 [docs/ko/npm-publish.md](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/npm-publish.md)를 참고하세요.
 
 ```bash
 pnpm add ./path/to/hunmin-search
@@ -71,7 +71,7 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 
 - 부분열·인덱스는 **UTF-16 코드 유닛** 기준입니다.
 - 대소문자 무시 시 라틴은 **`en-US` 로케일** 기준으로 접습니다(`toLocaleLowerCase('en-US')`).
-- 긴 문자열·다수 후보는 비용이 큽니다. 배치 크기·길이 상한은 **호출 측**에서 두는 것을 권장합니다(코드 주석·JSDoc 참고).
+- 긴 문자열·다수 후보는 비용이 큽니다. `pnpm bench`로 환경별 성능을 확인할 수 있습니다. 배치 크기·길이 상한은 **호출 측**에서 두는 것을 권장합니다.
 
 ## 개발
 
@@ -90,6 +90,7 @@ pnpm run lint
 pnpm run publint
 pnpm run attw
 pnpm run test:browser   # Playwright — Chromium 필요
+pnpm run bench           # vitest bench — 성능 벤치마크
 ```
 
 ## 라이선스

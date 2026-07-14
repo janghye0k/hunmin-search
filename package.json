@@ -57,6 +57,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:browser": "playwright test",
+    "bench": "vitest bench --run",
     "publint": "publint",
     "attw": "attw --pack . --profile node16",
     "publish:check": "pnpm run typecheck && pnpm run build && pnpm test && pnpm run publint && pnpm run attw",

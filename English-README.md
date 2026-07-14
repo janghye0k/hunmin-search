@@ -18,7 +18,7 @@ A small library for **subsequence filtering** and **Korean-relaxed Levenshtein**
 
 ## Install
 
-Use as a local path, Git dependency, or install from npm with `pnpm add hunmin-search`. Versioning, changelog, and manual publish steps follow [docs/plan-npm-manual-publish.md](./docs/plan-npm-manual-publish.md).
+Use as a local path, Git dependency, or install from npm with `pnpm add hunmin-search`. Versioning and changelog: [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md). Publish steps: [docs/ko/npm-publish.md](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/npm-publish.md) (Korean only).
 
 ```bash
 pnpm add ./path/to/hunmin-search
@@ -73,7 +73,7 @@ Paths vary by installer / monorepo layout. With Vite or Webpack, prefer the `pac
 
 - Subsequence indices are **UTF-16 code units**.
 - Case-insensitive Latin uses the **`en-US` locale** (`toLocaleLowerCase('en-US')`).
-- Long strings and many candidates are expensive. Prefer **caller-side** batching, caps, and truncation (see JSDoc).
+- Long strings and many candidates are expensive. Run `pnpm bench` to measure in your environment. Prefer **caller-side** batching, caps, and truncation.
 
 ## Development
 
@@ -92,6 +92,7 @@ pnpm run lint
 pnpm run publint
 pnpm run attw
 pnpm run test:browser   # Playwright — Chromium required
+pnpm run bench           # vitest bench — performance benchmarks
 ```
 
 ## License

@@ -1,7 +1,7 @@
-import { execSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
@@ -9,7 +9,10 @@ const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const pkgPath = join(root, 'package.json');
 
 function listTarEntries(tgzPath: string): string[] {
-  const out = execSync(`tar -tzf "${tgzPath}"`, { encoding: 'utf8' });
+  const out = execFileSync('tar', ['-tzf', basename(tgzPath)], {
+    cwd: dirname(tgzPath),
+    encoding: 'utf8',
+  });
   return out
     .split(/\r?\n/)
     .map((s) => s.trim())

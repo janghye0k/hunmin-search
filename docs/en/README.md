@@ -1,6 +1,6 @@
 # hunmin-search documentation (English)
 
-Plan: [plan-user-documentation.md](../plan-user-documentation.md) · Public API list: [api-surface.md](../api-surface.md) · Linking rules: [DOCUMENTATION_LINKS.md](../DOCUMENTATION_LINKS.md)
+Public API list: [api-surface.md](../api-surface.md) · Linking rules: [DOCUMENTATION_LINKS.md](../DOCUMENTATION_LINKS.md)
 
 ## Contents
 

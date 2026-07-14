@@ -27,6 +27,37 @@ describe('levenshteinKo', () => {
     expect(levenshteinKo('가', '강', { similarSubstitutionCost: 0.5 })).toBe(0.5);
     expect(levenshteinKo('가', '거', { similarSubstitutionCost: 0.5 })).toBe(1);
   });
+
+  it('matches levenshteinKoTrace distance across diverse inputs and options', () => {
+    const pairs: [string, string][] = [
+      ['홍길동', '홍길동'],
+      ['가', '강'],
+      ['가나다', '가나라'],
+      ['abc', 'ABC'],
+      ['', ''],
+      ['검색', '검색엔진최적화'],
+      ['검색엔진최적화', '검색'],
+      ['가나다라마', '가다라'],
+      ['가다라', '가나다라마'],
+      ['a', '가나다라마바사아자차'],
+      ['가나다라마바사아자차', 'a'],
+      ['ㅎㄱ', '학교'],
+    ];
+    const optionSets: import('../src/score/levenshtein-ko').LevenshteinKoOptions[] = [
+      {},
+      { caseSensitive: true },
+      { similarSubstitutionCost: 0.5 },
+      { caseSensitive: true, similarSubstitutionCost: 0.25 },
+    ];
+    for (const [a, b] of pairs) {
+      for (const opts of optionSets) {
+        expect(levenshteinKo(a, b, opts)).toBeCloseTo(
+          levenshteinKoTrace(a, b, opts).distance,
+          8,
+        );
+      }
+    }
+  });
 });
 
 describe('levenshteinKoTrace', () => {

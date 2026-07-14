@@ -46,4 +46,4 @@ These do not exist at runtime; they are listed here for docs and API reviewers.
 
 1. Update `src/index.ts`.
 2. Update this file and `test/api-surface.test.ts`.
-3. Update user-facing docs under `docs/ko` and `docs/en` (see plan in `plan-user-documentation.md`).
+3. Update user-facing docs under `docs/ko` and `docs/en`.

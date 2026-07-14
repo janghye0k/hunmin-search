@@ -1,6 +1,6 @@
 # hunmin-search 문서 (한국어)
 
-계획서: [plan-user-documentation.md](../plan-user-documentation.md) · 공개 API 목록: [api-surface.md](../api-surface.md) · 링크 규칙: [DOCUMENTATION_LINKS.md](../DOCUMENTATION_LINKS.md)
+공개 API 목록: [api-surface.md](../api-surface.md) · 링크 규칙: [DOCUMENTATION_LINKS.md](../DOCUMENTATION_LINKS.md)
 
 ## 목차
 

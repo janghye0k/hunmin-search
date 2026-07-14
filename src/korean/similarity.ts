@@ -18,7 +18,7 @@ export function isSyllable(c: string): boolean {
   return c >= '가' && c <= '힣';
 }
 
-/** True for Hangul jamo or complete syllable. 자음 자모이거나 완성형 음절이면 참입니다. */
+/** True for consonant jamo (ㄱ–ㅎ) or complete syllable (가–힣). Standalone vowels (ㅏ–ㅣ) return false. 자음 자모이거나 완성형 음절이면 참. 독립 모음은 거짓. */
 export function isKorean(c: string): boolean {
   return isConsonant(c) || isSyllable(c);
 }

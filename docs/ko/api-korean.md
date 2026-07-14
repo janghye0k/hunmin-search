@@ -22,3 +22,7 @@ hasFinal('강'); // true
 ```
 
 부분열 매칭에서 받침 없는 글자는 `isSimilar`로 완화될 수 있습니다. 자세한 흐름은 [api-score.md](./api-score.md)의 `matchSubsequenceKo`를 참고하세요.
+
+## 제한사항
+
+- `isKorean`은 호환 자모 **자음**(ㄱ–ㅎ)과 **완성형 음절**(가–힣)만 참으로 판정합니다. 독립 **모음**(ㅏ–ㅣ, U+314F–U+3163)은 `false`를 반환하며, Levenshtein 유사 할인 대상이 아닙니다.

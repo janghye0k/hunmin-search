@@ -11,6 +11,12 @@ describe('isConsonant / isSyllable / isKorean', () => {
     expect(isKorean('가')).toBe(true);
     expect(isKorean('a')).toBe(false);
   });
+
+  it('isKorean returns false for standalone vowels (current behavior)', () => {
+    expect(isKorean('ㅏ')).toBe(false);
+    expect(isKorean('ㅓ')).toBe(false);
+    expect(isKorean('ㅣ')).toBe(false);
+  });
 });
 
 describe('hasFinal', () => {

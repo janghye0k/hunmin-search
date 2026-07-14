@@ -22,3 +22,7 @@ hasFinal('강'); // true
 ```
 
 For how this feeds matching, see `matchSubsequenceKo` in [api-score.md](./api-score.md).
+
+## Limitations
+
+- `isKorean` returns `true` only for compatibility jamo **consonants** (ㄱ–ㅎ) and **complete syllables** (가–힣). Standalone **vowels** (ㅏ–ㅣ, U+314F–U+3163) return `false` and do not receive the Levenshtein similarity discount.
