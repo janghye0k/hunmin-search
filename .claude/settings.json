@@ -1,0 +1,12 @@
+{
+  "model": "claude-opus-4-6",
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "ponytail@ponytail": true,
+    "caveman@caveman": true,
+    "insane-search@gptaku-plugins": true,
+    "serena@claude-plugins-official": true
+  },
+  "autoUpdatesChannel": "latest",
+  "theme": "dark"
+}
