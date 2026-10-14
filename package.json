@@ -40,8 +40,14 @@
       }
     },
     "./browser": {
-      "types": "./dist/index.d.cts",
-      "default": "./dist/index.global.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.browser.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [

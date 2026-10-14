@@ -61,7 +61,13 @@ Loading `dist/index.global.cjs` exposes the global **`HunminSearch`** (tsup `glo
 </script>
 ```
 
-Paths vary by installer / monorepo layout. With Vite or Webpack, prefer the `package.json` **`hunmin-search/browser`** export subpath.
+With bundlers (Vite, Webpack, …), use the `hunmin-search/browser` export subpath:
+
+```js
+import { searchKoRanked } from 'hunmin-search/browser';
+```
+
+Its `import` condition maps to a browser ESM bundle (`dist/index.browser.js`) and `require` to the CJS build. The IIFE (`dist/index.global.cjs`) is only for `<script src>` with a direct file path and is not part of `exports`. Paths vary by installer / monorepo layout.
 
 ## API summary
 
@@ -79,7 +85,7 @@ Paths vary by installer / monorepo layout. With Vite or Webpack, prefer the `pac
 
 - Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md) · Changelog: [CHANGELOG.md](./CHANGELOG.md)
 - Typecheck uses **`moduleResolution`: `Bundler`**; relative imports omit extensions.
-- **tsup** emits ESM (`.js`), CJS (`.cjs`), browser IIFE (`.global.cjs`), and declarations into `dist/`.
+- **tsup** emits ESM (`.js`), CJS (`.cjs`), browser ESM (`.browser.js`), browser IIFE (`.global.cjs`), and declarations into `dist/`.
 
 Some Vitest suites expect **`dist` to exist**. Typical local / CI order:
 

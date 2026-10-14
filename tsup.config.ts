@@ -32,4 +32,18 @@ export default defineConfig([
       return { js: '.global.cjs' };
     },
   },
+  {
+    entry: { 'index.browser': 'src/index.ts' },
+    format: ['esm'],
+    clean: false,
+    sourcemap: true,
+    minify: false,
+    treeshake: true,
+    splitting: false,
+    platform: 'browser',
+    target: 'es2022',
+    outExtension() {
+      return { js: '.js' };
+    },
+  },
 ]);

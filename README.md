@@ -59,7 +59,13 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 </script>
 ```
 
-실제 경로는 설치 도구·모노레포 구조에 따라 달라질 수 있습니다. Vite·Webpack 등에서는 `package.json`의 `exports` 필드 **`hunmin-search/browser`** 서브패스를 쓰는 편이 낫습니다.
+번들러(Vite·Webpack 등)에서는 `package.json`의 `exports` 서브패스 **`hunmin-search/browser`**를 쓰세요.
+
+```js
+import { searchKoRanked } from 'hunmin-search/browser';
+```
+
+`import` 조건은 브라우저용 ESM 번들(`dist/index.browser.js`)로, `require` 조건은 CJS 빌드로 연결됩니다. IIFE(`dist/index.global.cjs`)는 `<script src>`로 **파일 경로를 직접** 지정할 때만 쓰며 `exports`에는 포함되지 않습니다. 설치 도구·모노레포에 따라 경로가 달라질 수 있습니다.
 
 ## API 요약
 
@@ -77,7 +83,7 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 
 - 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md) · 변경 기록: [CHANGELOG.md](./CHANGELOG.md)
 - 소스 타입체크: **`moduleResolution`: `Bundler`**, 상대 경로 import는 **확장자 없이** 작성합니다.
-- 빌드는 **tsup**으로 `dist/`에 ESM(`.js`), CJS(`.cjs`), 브라우저 IIFE(`.global.cjs`), 선언 파일을 냅니다.
+- 빌드는 **tsup**으로 `dist/`에 ESM(`.js`), CJS(`.cjs`), 브라우저 ESM(`.browser.js`), 브라우저 IIFE(`.global.cjs`), 선언 파일을 냅니다.
 
 일부 Vitest 테스트는 **`dist`가 있어야** 통과합니다. 로컬에서는 보통 아래 순서를 따릅니다(CI와 동일).
 
