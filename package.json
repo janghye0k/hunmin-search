@@ -1,6 +1,6 @@
 {
   "name": "hunmin-search",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": false,
   "description": "Hunmin Search — Korean fuzzy search: subsequence filter + Korean-aware Levenshtein scoring. Zero runtime dependencies.",
   "license": "MIT",

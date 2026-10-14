@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/janghye0k/hunmin-search/compare/v0.1.2...v0.2.0) (2026-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* hunmin-search/browser now resolves to an ESM build for
+import and to the CJS build for require instead of the IIFE file.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+* scores for characters whose lowercase form is longer change,
+alignment and trace indices may repeat, and code that builds
+SubsequenceMatchResult or RankedKoHit objects by hand must now provide
+queryIndices.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+* distances and scores can be lower than before because the
+result is now the true minimum, and an invalid similarSubstitutionCost throws
+RangeError instead of being computed with.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+
+### Bug Fixes
+
+* make hunmin-search/browser a real ESM subpath ([403ac37](https://github.com/janghye0k/hunmin-search/commit/403ac37d0f3ab62641c5034111d0da617c935c41))
+* report original-string positions for case-folded text ([39e4713](https://github.com/janghye0k/hunmin-search/commit/39e471331c94dfe97ab58cde8785709c906c6bf4))
+* return the true minimum edit distance and validate similarSubstitutionCost ([ce3e6cc](https://github.com/janghye0k/hunmin-search/commit/ce3e6cc067ac73eb01af0429e20d64379f944fba))
+
 ## [0.1.2](https://github.com/janghye0k/hunmin-search/compare/v0.1.1...v0.1.2) (2026-07-14)
 
 
