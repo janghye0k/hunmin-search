@@ -1,5 +1,5 @@
 /**
- * Korean jamo/syllable checks and “similar” relation (kled-js parity).
+ * Korean jamo/syllable checks and “similar” relation (modeled on kled-js).
  *
  * 자모·완성형 범위 판별과, 부분열·Levenshtein에서 쓰는 “유사 글자” 관계를 정의합니다.
  */

@@ -2,7 +2,7 @@
 
 소스: [`src/korean/similarity.ts`](../../src/korean/similarity.ts)
 
-kled-js와 맞춘 **자모·완성형 판별**과 부분열·Levenshtein에서 쓰는 **유사(`isSimilar`)** 관계입니다.
+자모·완성형 판별과, 부분열 매칭과 Levenshtein에서 쓰는 유사 관계(`isSimilar`)입니다. kled(npm 패키지명 `kled`)를 참고해 만들었습니다.
 
 ## 함수 요약
 

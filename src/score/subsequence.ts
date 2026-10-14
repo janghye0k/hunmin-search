@@ -16,7 +16,7 @@ export interface MatchSubsequenceKoOptions {
 /**
  * Result of a greedy subsequence scan.
  *
- * `targetIndices`는 질의의 각 UTF-16 코드 유닛이 후보에서 매칭된 위치입니다(BMP 가정, kled 스타일).
+ * `targetIndices`/`queryIndices`는 접힌 질의의 각 UTF-16 코드 유닛에 대응하는 후보·질의의 **원문** UTF-16 위치입니다(대소문자 접기로 길이가 늘면 중복 가능).
  */
 export interface SubsequenceMatchResult {
   ok: boolean;

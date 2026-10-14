@@ -2,7 +2,7 @@
 
 Source: [`src/korean/similarity.ts`](../../src/korean/similarity.ts)
 
-Jamo / syllable checks and the **`isSimilar`** relation used by subsequence matching and Korean-aware Levenshtein (kled-js parity).
+Jamo and syllable checks, plus the `isSimilar` relation used by subsequence matching and the Korean-aware Levenshtein distance. It is modeled on kled (the npm package is named `kled`).
 
 ## Functions
 

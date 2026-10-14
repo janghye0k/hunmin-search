@@ -75,10 +75,20 @@ import { searchKoRanked } from 'hunmin-search/browser';
 
 ## 제약·메모
 
-- 부분열·인덱스는 **UTF-16 코드 유닛** 기준입니다.
-- 대소문자 무시 시 라틴은 **`en-US` 로케일** 기준으로 접습니다(`toLocaleLowerCase('en-US')`).
-- 긴 문자열·다수 후보는 비용이 큽니다. `pnpm bench`로 환경별 성능을 확인할 수 있습니다. 배치 크기·길이 상한은 **호출 측**에서 두는 것을 권장합니다.
+- 인덱스는 UTF-16 코드 유닛 기준입니다. 이모지 같은 서로게이트 쌍은 인덱스 두 칸을 씁니다.
+- 대소문자를 무시할 때는 문자열 전체를 `toLocaleLowerCase('en-US')`로 소문자화한 뒤 비교합니다. 편집 거리와 점수 분모도 소문자화한 문자열 길이를 씁니다.
+- `İ`처럼 소문자화하면 길이가 늘어나는 문자는 `subsequenceAlignments`와 `editTrace`의 인덱스가 원문의 같은 위치를 여러 번 가리킬 수 있습니다. 인덱스는 항상 원문 범위 안에 있습니다. 하이라이트할 때는 중복을 합쳐서 쓰면 됩니다. `editTrace`는 소문자화한 문자열의 편집 경로이며 원문을 그대로 고치는 명령 목록은 아닙니다.
+- 그리스 대문자 `Σ`는 단어 끝에 오는지에 따라 `σ`나 `ς`로 바뀝니다. 질의와 후보를 따로 소문자화하기 때문에 같은 `Σ`도 양쪽에서 다르게 바뀔 수 있습니다.
+- 유니코드 정규화는 하지 않습니다. 완성형(NFC)과 분해형(NFD)은 다른 문자열이므로 호출하기 전에 질의와 후보를 NFC로 맞추세요. 반환되는 인덱스는 넘겨준 문자열 기준입니다. 정규화하기 전의 원문을 화면에 보여준다면 위치 변환이 따로 필요합니다.
 
+```ts
+const nfc = (s: string) => s.normalize('NFC');
+searchKoRanked(nfc(query), candidates.map(nfc));
+```
+
+- 편집 거리는 항상 최소 편집 거리입니다. `similarSubstitutionCost`(기본 `0.01`)의 범위와 오류 처리는 [docs/ko/api-score.md](./docs/ko/api-score.md)에 있습니다.
+- Node 18은 공식 지원이 끝났지만 `engines`는 `>=18`을 유지합니다. 새 서비스에는 지원 중인 LTS를 쓰세요.
+- 긴 문자열이나 후보가 많으면 비용이 큽니다. `pnpm bench`로 환경별 성능을 확인할 수 있고, 배치 크기와 길이 상한은 호출하는 쪽에서 두는 것을 권장합니다.
 ## 개발
 
 - 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md) · 변경 기록: [CHANGELOG.md](./CHANGELOG.md)

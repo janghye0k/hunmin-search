@@ -77,10 +77,20 @@ Its `import` condition maps to a browser ESM bundle (`dist/index.browser.js`) an
 
 ## Constraints
 
-- Subsequence indices are **UTF-16 code units**.
-- Case-insensitive Latin uses the **`en-US` locale** (`toLocaleLowerCase('en-US')`).
-- Long strings and many candidates are expensive. Run `pnpm bench` to measure in your environment. Prefer **caller-side** batching, caps, and truncation.
+- Indices are UTF-16 code units. A surrogate pair such as an emoji takes two index slots.
+- With case folding on (the default), the whole string is lowercased with `toLocaleLowerCase('en-US')` before comparison. The edit distance and the score denominator use the lowercased length.
+- For a character that gets longer when lowercased (such as `İ`), the indices in `subsequenceAlignments` and `editTrace` can point at the same original position more than once. Indices always stay inside the original string; merge the duplicates when highlighting. `editTrace` is the edit path of the lowercased strings, not a script that rewrites the original.
+- A Greek capital sigma (`Σ`) becomes `σ` or `ς` depending on whether it ends a word. Query and candidate are lowercased separately, so the same `Σ` can end up different on each side.
+- No Unicode normalization is applied. NFC and NFD forms are different strings, so normalize the query and the candidates to NFC before calling. Returned indices refer to the strings you pass in; if you show the text as it was before normalization, you need to map the positions yourself.
 
+```ts
+const nfc = (s: string) => s.normalize('NFC');
+searchKoRanked(nfc(query), candidates.map(nfc));
+```
+
+- The edit distance is always the true minimum. The range and error handling of `similarSubstitutionCost` (default `0.01`) are described in [docs/en/api-score.md](./docs/en/api-score.md).
+- Node 18 is end-of-life, but `engines` still says `>=18`. Use a supported LTS for new services.
+- Long strings and many candidates are expensive. Run `pnpm bench` to measure in your environment, and cap batch size and length in the calling code.
 ## Development
 
 - Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md) · Changelog: [CHANGELOG.md](./CHANGELOG.md)
