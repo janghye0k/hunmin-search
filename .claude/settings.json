@@ -1,12 +1,52 @@
 {
-  "model": "claude-opus-4-6",
+  "model": "sonnet",
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
-    "ponytail@ponytail": true,
     "caveman@caveman": true,
-    "insane-search@gptaku-plugins": true,
-    "serena@claude-plugins-official": true
+    "ponytail@ponytail": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
   },
   "autoUpdatesChannel": "latest",
-  "theme": "dark"
+  "theme": "dark",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "graphify hook-guard search"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "graphify hook-guard read"
+          }
+        ]
+      }
+    ]
+  }
 }
