@@ -1,5 +1,6 @@
 import { isKorean, isSimilar } from '../korean/similarity';
 import { caseFoldEnUs } from '../util/caseFoldEnUs';
+import { resolveSimilarCost } from './options';
 
 /**
  * Options for {@link levenshteinKo} / {@link levenshteinKoTrace}.
@@ -8,44 +9,36 @@ import { caseFoldEnUs } from '../util/caseFoldEnUs';
  */
 export interface LevenshteinKoOptions {
   caseSensitive?: boolean;
-  /** Replacement cost when two Korean units are `isSimilar` but not equal (default 0.01). */
+  /**
+   * 두 한글 유닛이 `isSimilar`지만 같지 않을 때의 치환 비용(기본 0.01). 유한한 0 이상의 수여야 하며 아니면 `RangeError`.
+   * 일반 치환 비용 1을 대체한다.
+   */
   similarSubstitutionCost?: number;
 }
 
-const DEFAULT_SIMILAR_COST = 0.01;
+function diagKind(a: string, b: string): 'equal' | 'similar' | 'replace' {
+  if (a === b) return 'equal';
+  return isKorean(a) && isKorean(b) && isSimilar(a, b) ? 'similar' : 'replace';
+}
 
-const EPS = 1e-9;
-
-function approxEq(x: number, y: number): boolean {
-  return Math.abs(x - y) < EPS;
+function substitutionCost(a: string, b: string, similarCost: number): number {
+  const kind = diagKind(a, b);
+  if (kind === 'equal') return 0;
+  return kind === 'similar' ? similarCost : 1;
 }
 
 function fillLevenshteinKoTable(s1: string, s2: string, similarCost: number): number[][] {
   const table: number[][] = [];
   table[0] = Array.from({ length: s1.length + 1 }, (_, n) => n);
-
   for (let i = 1; i <= s2.length; i++) {
     table[i] = [i];
   }
-
   for (let i = 1; i <= s2.length; i++) {
     for (let j = 1; j <= s1.length; j++) {
-      const bChar = s2[i - 1]!;
-      const aChar = s1[j - 1]!;
-      let korSimilarity = 0;
-
-      if (bChar !== aChar && isKorean(aChar) && isKorean(bChar) && isSimilar(aChar, bChar)) {
-        korSimilarity = similarCost;
-      }
-
-      if (korSimilarity > 0 || bChar === aChar) {
-        table[i]![j] = table[i - 1]![j - 1]! + korSimilarity;
-      } else {
-        table[i]![j] = Math.min(table[i - 1]![j - 1]! + 1, table[i]![j - 1]! + 1, table[i - 1]![j]! + 1);
-      }
+      const sub = substitutionCost(s1[j - 1]!, s2[i - 1]!, similarCost);
+      table[i]![j] = Math.min(table[i - 1]![j - 1]! + sub, table[i]![j - 1]! + 1, table[i - 1]![j]! + 1);
     }
   }
-
   return table;
 }
 
@@ -54,35 +47,23 @@ function levenshteinKoDistance(a: string, b: string, similarCost: number): numbe
   const cols = s1.length + 1;
   let prev = Array.from({ length: cols }, (_, n) => n);
   let curr = new Array<number>(cols);
-
   for (let i = 1; i <= s2.length; i++) {
     curr[0] = i;
     for (let j = 1; j <= s1.length; j++) {
-      const bChar = s2[i - 1]!;
-      const aChar = s1[j - 1]!;
-      let korSimilarity = 0;
-
-      if (bChar !== aChar && isKorean(aChar) && isKorean(bChar) && isSimilar(aChar, bChar)) {
-        korSimilarity = similarCost;
-      }
-
-      if (korSimilarity > 0 || bChar === aChar) {
-        curr[j] = prev[j - 1]! + korSimilarity;
-      } else {
-        curr[j] = Math.min(prev[j - 1]! + 1, curr[j - 1]! + 1, prev[j]! + 1);
-      }
+      const sub = substitutionCost(s1[j - 1]!, s2[i - 1]!, similarCost);
+      curr[j] = Math.min(prev[j - 1]! + sub, curr[j - 1]! + 1, prev[j]! + 1);
     }
     [prev, curr] = [curr, prev];
   }
-
   return prev[s1.length]!;
 }
 
 /**
  * Levenshtein distance between two strings with a small discount when two Korean
- * characters are considered “similar” (kled-js behavior).
+ * characters are considered “similar”.
  *
- * 한글 글자 쌍이 {@link isSimilar}이면 치환 비용을 `similarSubstitutionCost`만큼만 줍니다. 라틴은 기본적으로 `en-US` 접기입니다.
+ * 각 셀은 치환·삽입·삭제의 최솟값(진짜 최소 거리). kled-js는 참고 구현이며 비최적 결과를 재현하지 않음.
+ * 빈 문자열의 거리는 상대 문자열의 접힌 UTF-16 길이. 옵션이 유효하지 않으면 입력과 무관하게 `RangeError`.
  *
  * @example
  * 다음 예는 라틴 대소문자와 한글 혼합에서의 거리를 보여줍니다.
@@ -92,19 +73,14 @@ function levenshteinKoDistance(a: string, b: string, similarCost: number): numbe
  * ```
  */
 export function levenshteinKo(a: string, b: string, options: LevenshteinKoOptions = {}): number {
+  const similarCost = resolveSimilarCost(options.similarSubstitutionCost);
   const caseSensitive = options.caseSensitive ?? false;
-  const similarCost = options.similarSubstitutionCost ?? DEFAULT_SIMILAR_COST;
 
-  if (a.length === 0) return b.length;
-  if (b.length === 0) return a.length;
+  const s1 = caseSensitive ? a : caseFoldEnUs(a);
+  const s2 = caseSensitive ? b : caseFoldEnUs(b);
 
-  let s1 = a;
-  let s2 = b;
-  if (!caseSensitive) {
-    s1 = caseFoldEnUs(s1);
-    s2 = caseFoldEnUs(s2);
-  }
-
+  if (s1.length === 0) return s2.length;
+  if (s2.length === 0) return s1.length;
   if (s1 === s2) return 0;
 
   return levenshteinKoDistance(s1, s2, similarCost);
@@ -128,52 +104,23 @@ export interface LevenshteinKoTraceResult {
   ops: LevenshteinKoTraceOp[];
 }
 
-/**
- * Same cost model as `levenshteinKo`, plus a greedy backtrace for alignment.
- *
- * DP 테이블을 채운 뒤 끝에서부터 연산을 모읍니다. UI나 분석용으로 쓰기에 적합합니다.
- *
- * @example
- * 다음 예는 두 문자열에 대한 역추적 결과를 요청하는 형태를 보여줍니다.
- *
- * ```ts
- * levenshteinKoTrace('가', '각').ops.length >= 0;
- * ```
- */
-export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoOptions = {}): LevenshteinKoTraceResult {
-  const caseSensitive = options.caseSensitive ?? false;
-  const similarCost = options.similarSubstitutionCost ?? DEFAULT_SIMILAR_COST;
-
-  if (a.length === 0 && b.length === 0) {
+function traceFolded(s1: string, s2: string, similarCost: number): LevenshteinKoTraceResult {
+  if (s1.length === 0 && s2.length === 0) {
     return { distance: 0, ops: [] };
   }
-  if (a.length === 0) {
+  if (s1.length === 0) {
     const ops: LevenshteinKoTraceOp[] = [];
-    for (let bi = 0; bi < b.length; bi++) {
-      ops.push({ kind: 'insert', bIndex: bi });
-    }
-    return { distance: b.length, ops };
+    for (let bi = 0; bi < s2.length; bi++) ops.push({ kind: 'insert', bIndex: bi });
+    return { distance: s2.length, ops };
   }
-  if (b.length === 0) {
+  if (s2.length === 0) {
     const ops: LevenshteinKoTraceOp[] = [];
-    for (let ai = 0; ai < a.length; ai++) {
-      ops.push({ kind: 'delete', aIndex: ai });
-    }
-    return { distance: a.length, ops };
+    for (let ai = 0; ai < s1.length; ai++) ops.push({ kind: 'delete', aIndex: ai });
+    return { distance: s1.length, ops };
   }
-
-  let s1 = a;
-  let s2 = b;
-  if (!caseSensitive) {
-    s1 = caseFoldEnUs(s1);
-    s2 = caseFoldEnUs(s2);
-  }
-
   if (s1 === s2) {
     const ops: LevenshteinKoTraceOp[] = [];
-    for (let k = 0; k < s1.length; k++) {
-      ops.push({ kind: 'equal', aIndex: k, bIndex: k });
-    }
+    for (let k = 0; k < s1.length; k++) ops.push({ kind: 'equal', aIndex: k, bIndex: k });
     return { distance: 0, ops };
   }
 
@@ -184,66 +131,54 @@ export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoO
   let i = s2.length;
   let j = s1.length;
 
+  // Each table cell is exactly one of the three candidate values (Math.min returns an operand), so recomputing the
+  // same expressions and comparing with === finds the candidate the DP chose. No epsilon: an epsilon could pick a
+  // more expensive path when two costs differ by less than it.
   while (i > 0 || j > 0) {
-    const bChar = i > 0 ? s2[i - 1]! : '';
-    const aChar = j > 0 ? s1[j - 1]! : '';
-
+    const cell = table[i]![j]!;
     if (i > 0 && j > 0) {
-      const diag = table[i - 1]![j - 1]!;
-      if (bChar === aChar && approxEq(table[i]![j]!, diag)) {
-        rev.push({ kind: 'equal', aIndex: j - 1, bIndex: i - 1 });
-        i--;
-        j--;
-        continue;
-      }
-      if (
-        bChar !== aChar &&
-        isKorean(aChar) &&
-        isKorean(bChar) &&
-        isSimilar(aChar, bChar) &&
-        similarCost > 0 &&
-        approxEq(table[i]![j]!, diag + similarCost)
-      ) {
-        rev.push({ kind: 'similar', aIndex: j - 1, bIndex: i - 1 });
-        i--;
-        j--;
-        continue;
-      }
-      if (approxEq(table[i]![j]!, diag + 1)) {
-        rev.push({ kind: 'replace', aIndex: j - 1, bIndex: i - 1 });
+      const aChar = s1[j - 1]!;
+      const bChar = s2[i - 1]!;
+      if (cell === table[i - 1]![j - 1]! + substitutionCost(aChar, bChar, similarCost)) {
+        rev.push({ kind: diagKind(aChar, bChar), aIndex: j - 1, bIndex: i - 1 });
         i--;
         j--;
         continue;
       }
     }
-
-    if (i > 0 && approxEq(table[i]![j]!, table[i - 1]![j]! + 1)) {
+    if (i > 0 && cell === table[i - 1]![j]! + 1) {
       rev.push({ kind: 'insert', bIndex: i - 1 });
       i--;
       continue;
     }
-
-    if (j > 0 && approxEq(table[i]![j]!, table[i]![j - 1]! + 1)) {
+    if (j > 0 && cell === table[i]![j - 1]! + 1) {
       rev.push({ kind: 'delete', aIndex: j - 1 });
       j--;
       continue;
     }
-
-    // Fallback: prefer diagonal substitute if possible
-    if (i > 0 && j > 0) {
-      rev.push({ kind: 'replace', aIndex: j - 1, bIndex: i - 1 });
-      i--;
-      j--;
-      continue;
-    }
-    if (i > 0) {
-      rev.push({ kind: 'insert', bIndex: i - 1 });
-      i--;
-    } else if (j > 0) {
-      rev.push({ kind: 'delete', aIndex: j - 1 });
-      j--;
-    }
+    throw new Error('levenshteinKoTrace: backtrace invariant violated');
   }
 
   return { distance, ops: rev.reverse() };
+}
+
+/**
+ * Same cost model as `levenshteinKo`, plus a backtrace of one minimum-cost edit path.
+ * 동률이면 대각선(일치/유사/치환) → 삽입 → 삭제 순으로 고른다. 옵션 검증과 빈 문자열 처리는 `levenshteinKo`와 같다.
+ *
+ * @example
+ * 다음 예는 두 문자열에 대한 역추적 결과를 요청하는 형태를 보여줍니다.
+ *
+ * ```ts
+ * levenshteinKoTrace('가', '각').ops.length >= 0;
+ * ```
+ */
+export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoOptions = {}): LevenshteinKoTraceResult {
+  const similarCost = resolveSimilarCost(options.similarSubstitutionCost);
+  const caseSensitive = options.caseSensitive ?? false;
+
+  const s1 = caseSensitive ? a : caseFoldEnUs(a);
+  const s2 = caseSensitive ? b : caseFoldEnUs(b);
+
+  return traceFolded(s1, s2, similarCost);
 }

@@ -1,4 +1,5 @@
 import { levenshteinKo, type LevenshteinKoOptions } from './levenshtein-ko';
+import { resolveSimilarCost } from './options';
 import { matchSubsequenceKo, type SubsequenceMatchKind } from './subsequence';
 
 /**
@@ -59,6 +60,7 @@ function normalizedKoScore(candidateLen: number, queryLen: number, editDistance:
  */
 export function rankByKoPipeline(query: string, candidates: string[], options: KoPipelineOptions = {}): RankedKoHit[] {
   const { includeNonMatching = false, ...levOpts } = options;
+  resolveSimilarCost(levOpts.similarSubstitutionCost); // validate before any filtering or early return
 
   const hits: RankedKoHit[] = [];
 
