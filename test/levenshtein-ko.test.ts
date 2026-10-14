@@ -13,7 +13,7 @@ describe('levenshteinKo', () => {
     expect(levenshteinKo('한글', '한글')).toBe(0);
   });
 
-  it('uses default similar substitution cost for partial Korean matches (kled parity)', () => {
+  it('uses default similar substitution cost for partial Korean matches (modeled on kled)', () => {
     expect(levenshteinKo('A학급', 'B학급')).toBe(1);
     expect(levenshteinKo('Aㅎㄱ', 'B학급')).toBe(1.02);
   });

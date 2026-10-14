@@ -1,6 +1,7 @@
 import { levenshteinKo, type LevenshteinKoOptions } from './levenshtein-ko';
 import { resolveSimilarCost } from './options';
 import { matchSubsequenceKo, type SubsequenceMatchKind } from './subsequence';
+import { caseFoldEnUs } from '../util/caseFoldEnUs';
 
 /**
  * Options for {@link rankByKoPipeline}.
@@ -23,14 +24,17 @@ export interface RankedKoHit {
   ok: boolean;
   /**
    * Normalized match quality in `[0, 1]` (kled-style ratio, clamped).
-   * `(len - editDistance) / len`, or `1` when both query and candidate are empty.
+   * `(len - editDistance) / len` where `len` is the UTF-16 length of the case-folded candidate, or `1` when both query and candidate are empty.
    *
    * kled 스타일 비율로 클램프합니다. 빈 질의·빈 후보면 `1`입니다.
    */
   score: number;
   /** Levenshtein distance for passing candidates; `null` when subsequence failed (`includeNonMatching`). */
   editDistance: number | null;
+  /** UTF-16 index in the original haystack per folded query unit (duplicates possible when folding expands a character). */
   targetIndices: number[];
+  /** UTF-16 index in the original query per folded query unit (same length as `targetIndices`). */
+  queryIndices: number[];
   kinds: SubsequenceMatchKind[];
 }
 
@@ -77,6 +81,7 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
           score: 0,
           editDistance: null,
           targetIndices: [],
+          queryIndices: [],
           kinds: [],
         });
       }
@@ -84,7 +89,8 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
     }
 
     const editDistance = levenshteinKo(query, value, levOpts);
-    const score = normalizedKoScore(value.length, query.length, editDistance);
+    const foldedCandidateLen = (options.caseSensitive ? value : caseFoldEnUs(value)).length;
+    const score = normalizedKoScore(foldedCandidateLen, query.length, editDistance);
 
     hits.push({
       value,
@@ -92,6 +98,7 @@ export function rankByKoPipeline(query: string, candidates: string[], options: K
       score,
       editDistance,
       targetIndices: sub.targetIndices,
+      queryIndices: sub.queryIndices,
       kinds: sub.kinds,
     });
   }

@@ -1,5 +1,5 @@
 import { isKorean, isSimilar } from '../korean/similarity';
-import { caseFoldEnUs } from '../util/caseFoldEnUs';
+import { caseFoldEnUs, originalIndex, prepareText, type FoldedText } from '../util/caseFoldEnUs';
 import { resolveSimilarCost } from './options';
 
 /**
@@ -162,8 +162,20 @@ function traceFolded(s1: string, s2: string, similarCost: number): LevenshteinKo
   return { distance, ops: rev.reverse() };
 }
 
+function mapOp(op: LevenshteinKoTraceOp, fa: FoldedText, fb: FoldedText): LevenshteinKoTraceOp {
+  switch (op.kind) {
+    case 'delete':
+      return { kind: 'delete', aIndex: originalIndex(fa, op.aIndex) };
+    case 'insert':
+      return { kind: 'insert', bIndex: originalIndex(fb, op.bIndex) };
+    default:
+      return { kind: op.kind, aIndex: originalIndex(fa, op.aIndex), bIndex: originalIndex(fb, op.bIndex) };
+  }
+}
+
 /**
  * Same cost model as `levenshteinKo`, plus a backtrace of one minimum-cost edit path.
+ * `ops`의 인덱스는 접힌 문자열의 편집 경로를 원문 UTF-16 위치에 연결한 것이며, 원문을 그대로 재구성하는 명령 목록이 아닙니다. 길이가 늘어난 문자는 같은 원문 위치를 여러 번 가리킬 수 있습니다.
  * 동률이면 대각선(일치/유사/치환) → 삽입 → 삭제 순으로 고른다. 옵션 검증과 빈 문자열 처리는 `levenshteinKo`와 같다.
  *
  * @example
@@ -177,8 +189,10 @@ export function levenshteinKoTrace(a: string, b: string, options: LevenshteinKoO
   const similarCost = resolveSimilarCost(options.similarSubstitutionCost);
   const caseSensitive = options.caseSensitive ?? false;
 
-  const s1 = caseSensitive ? a : caseFoldEnUs(a);
-  const s2 = caseSensitive ? b : caseFoldEnUs(b);
+  const fa = prepareText(a, caseSensitive);
+  const fb = prepareText(b, caseSensitive);
+  const result = traceFolded(fa.text, fb.text, similarCost);
 
-  return traceFolded(s1, s2, similarCost);
+  if (!fa.origIndex && !fb.origIndex) return result;
+  return { distance: result.distance, ops: result.ops.map((op) => mapOp(op, fa, fb)) };
 }

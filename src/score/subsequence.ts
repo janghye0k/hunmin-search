@@ -1,5 +1,5 @@
 import { hasFinal, isKorean, isSimilar } from '../korean/similarity';
-import { caseFoldEnUs } from '../util/caseFoldEnUs';
+import { originalIndex, prepareText } from '../util/caseFoldEnUs';
 
 /** Whether a consumed haystack unit matched exactly or under Korean similarity rules. */
 export type SubsequenceMatchKind = 'exact' | 'similar';
@@ -20,8 +20,10 @@ export interface MatchSubsequenceKoOptions {
  */
 export interface SubsequenceMatchResult {
   ok: boolean;
-  /** UTF-16 code unit index in haystack per query code unit (BMP-safe, kled-style). */
+  /** UTF-16 index in the **original** haystack per folded query unit. Duplicates occur when case folding expands a character (e.g. `İ`). */
   targetIndices: number[];
+  /** UTF-16 index in the **original** query per folded query unit (same length as `targetIndices`). */
+  queryIndices: number[];
   kinds: SubsequenceMatchKind[];
 }
 
@@ -44,17 +46,20 @@ export function matchSubsequenceKo(
   options: MatchSubsequenceKoOptions = {}
 ): SubsequenceMatchResult {
   const caseSensitive = options.caseSensitive ?? false;
-  const q = caseSensitive ? query : caseFoldEnUs(query);
-  const h = caseSensitive ? haystack : caseFoldEnUs(haystack);
+  const fq = prepareText(query, caseSensitive);
+  const fh = prepareText(haystack, caseSensitive);
+  const q = fq.text;
+  const h = fh.text;
 
   if (q.length === 0) {
-    return { ok: true, targetIndices: [], kinds: [] };
+    return { ok: true, targetIndices: [], queryIndices: [], kinds: [] };
   }
   if (q.length > h.length) {
-    return { ok: false, targetIndices: [], kinds: [] };
+    return { ok: false, targetIndices: [], queryIndices: [], kinds: [] };
   }
 
   const targetIndices: number[] = [];
+  const queryIndices: number[] = [];
   const kinds: SubsequenceMatchKind[] = [];
   let from = 0;
 
@@ -78,13 +83,14 @@ export function matchSubsequenceKo(
     }
 
     if (idx === -1) {
-      return { ok: false, targetIndices: [], kinds: [] };
+      return { ok: false, targetIndices: [], queryIndices: [], kinds: [] };
     }
 
-    targetIndices.push(idx);
+    targetIndices.push(originalIndex(fh, idx));
+    queryIndices.push(originalIndex(fq, qi));
     kinds.push(kind);
     from = idx + 1;
   }
 
-  return { ok: true, targetIndices, kinds };
+  return { ok: true, targetIndices, queryIndices, kinds };
 }

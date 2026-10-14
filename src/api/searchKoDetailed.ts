@@ -8,9 +8,9 @@ import type { SubsequenceMatchKind } from '../score/subsequence';
  * 질의의 UTF-16 인덱스, 후보의 UTF-16 인덱스, 매칭 종류(`exact` / `similar`)를 담아 하이라이트에 쓸 수 있습니다.
  */
 export interface SubsequenceAlignment {
-  /** UTF-16 code unit index in `query`. */
+  /** UTF-16 index in the original `query`. Several alignments may share an index when case folding expands a character (e.g. `İ`). */
   queryIndex: number;
-  /** UTF-16 code unit index in the candidate string. */
+  /** UTF-16 index in the original candidate string (duplicates possible, see `queryIndex`). */
   targetIndex: number;
   kind: SubsequenceMatchKind;
 }
@@ -67,7 +67,7 @@ export function searchKoDetailed(
   return rankByKoPipeline(query, candidates, pipeOpts).map((h) => {
     const subsequenceAlignments: SubsequenceAlignment[] = h.ok
       ? h.targetIndices.map((targetIndex, qi) => ({
-          queryIndex: qi,
+          queryIndex: h.queryIndices[qi]!,
           targetIndex,
           kind: h.kinds[qi]!,
         }))
