@@ -15,13 +15,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.18'
           cache: 'pnpm'
@@ -41,8 +43,96 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Package lifecycle gates
+        env:
+          HUNMIN_RUN_LIFECYCLE_GATES: '1'
+        run: pnpm exec vitest run test/package-lifecycle.test.ts
+
       - name: Install Playwright (Chromium)
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Browser smoke (IIFE global)
         run: pnpm run test:browser
+
+      - name: Pack for consumer checks
+        run: |
+          mkdir -p ci-package
+          npm pack --ignore-scripts --pack-destination ci-package
+          node -e "console.log(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('package.json')).digest('hex'))" > ci-package/manifest.sha256
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: consumer-package
+          path: ci-package/
+          if-no-files-found: error
+
+  consumer:
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        node-version: ['22.0.0', '24.0.0', '26']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: consumer-package
+          path: ci-package
+
+      - name: Check the packed runtime
+        run: node test/fixtures/package-gates-consumer.mjs "$PWD"/ci-package/*.tgz
+
+  windows-manifest:
+    needs: quality
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Use LF for checkout
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+        with:
+          version: 10
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.18'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm run build
+
+      - name: Verify generated package.json is committed
+        run: git diff --exit-code -- package.json
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: consumer-package
+          path: ci-package
+
+      - name: Compare manifest bytes with Ubuntu
+        run: |
+          $expected = (Get-Content ci-package/manifest.sha256 -Raw).Trim()
+          $actual = node -e "console.log(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('package.json')).digest('hex'))"
+          if ($actual -cne $expected) { throw "Manifest SHA-256 differs from Ubuntu: $actual != $expected" }
+          Write-Output $actual
+
+      - name: Package lifecycle gates
+        env:
+          HUNMIN_RUN_LIFECYCLE_GATES: '1'
+        run: pnpm exec vitest run test/package-lifecycle.test.ts

@@ -1,0 +1,137 @@
+{
+  "rootImport": {
+    "keys": [
+      "disassemble",
+      "disassembleCompleteCharacter",
+      "disassembleToGroups",
+      "getChoseong",
+      "hasFinal",
+      "isConsonant",
+      "isKorean",
+      "isSimilar",
+      "isSyllable",
+      "levenshteinKo",
+      "levenshteinKoTrace",
+      "matchSubsequenceKo",
+      "rankByKoPipeline",
+      "searchKoDetailed",
+      "searchKoRanked"
+    ],
+    "hasDefault": false,
+    "hasEsModule": false,
+    "ranked": [
+      {
+        "value": "홍길동",
+        "score": 0.6666666666666666
+      }
+    ]
+  },
+  "rootRequire": {
+    "keys": [
+      "disassemble",
+      "disassembleCompleteCharacter",
+      "disassembleToGroups",
+      "getChoseong",
+      "hasFinal",
+      "isConsonant",
+      "isKorean",
+      "isSimilar",
+      "isSyllable",
+      "levenshteinKo",
+      "levenshteinKoTrace",
+      "matchSubsequenceKo",
+      "rankByKoPipeline",
+      "searchKoDetailed",
+      "searchKoRanked"
+    ],
+    "hasDefault": false,
+    "hasEsModule": false,
+    "ranked": [
+      {
+        "value": "홍길동",
+        "score": 0.6666666666666666
+      }
+    ]
+  },
+  "browserImport": {
+    "keys": [
+      "disassemble",
+      "disassembleCompleteCharacter",
+      "disassembleToGroups",
+      "getChoseong",
+      "hasFinal",
+      "isConsonant",
+      "isKorean",
+      "isSimilar",
+      "isSyllable",
+      "levenshteinKo",
+      "levenshteinKoTrace",
+      "matchSubsequenceKo",
+      "rankByKoPipeline",
+      "searchKoDetailed",
+      "searchKoRanked"
+    ],
+    "hasDefault": false,
+    "hasEsModule": false,
+    "ranked": [
+      {
+        "value": "홍길동",
+        "score": 0.6666666666666666
+      }
+    ]
+  },
+  "browserRequire": {
+    "keys": [
+      "disassemble",
+      "disassembleCompleteCharacter",
+      "disassembleToGroups",
+      "getChoseong",
+      "hasFinal",
+      "isConsonant",
+      "isKorean",
+      "isSimilar",
+      "isSyllable",
+      "levenshteinKo",
+      "levenshteinKoTrace",
+      "matchSubsequenceKo",
+      "rankByKoPipeline",
+      "searchKoDetailed",
+      "searchKoRanked"
+    ],
+    "hasDefault": false,
+    "hasEsModule": false,
+    "ranked": [
+      {
+        "value": "홍길동",
+        "score": 0.6666666666666666
+      }
+    ]
+  },
+  "browserIife": {
+    "keys": [
+      "disassemble",
+      "disassembleCompleteCharacter",
+      "disassembleToGroups",
+      "getChoseong",
+      "hasFinal",
+      "isConsonant",
+      "isKorean",
+      "isSimilar",
+      "isSyllable",
+      "levenshteinKo",
+      "levenshteinKoTrace",
+      "matchSubsequenceKo",
+      "rankByKoPipeline",
+      "searchKoDetailed",
+      "searchKoRanked"
+    ],
+    "hasDefault": false,
+    "hasEsModule": false,
+    "ranked": [
+      {
+        "value": "홍길동",
+        "score": 0.6666666666666666
+      }
+    ]
+  }
+}

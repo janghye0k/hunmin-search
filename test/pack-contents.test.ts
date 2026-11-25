@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { packEnvironment } from './fixtures/pack-environment';
 
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const pkgPath = join(root, 'package.json');
@@ -35,6 +36,7 @@ beforeAll(() => {
   dest = mkdtempSync(join(tmpdir(), 'hunmin-search-pack-'));
   execSync(`npm pack --ignore-scripts --pack-destination "${dest}"`, {
     cwd: root,
+    env: packEnvironment(),
     stdio: ['ignore', 'pipe', 'pipe'],
     encoding: 'utf8',
   });

@@ -71,6 +71,7 @@
     "@playwright/test": "^1.65.1",
     "@types/node": "^22.10.0",
     "@vitest/coverage-v8": "^5.1.1",
+    "acorn": "^8.16.0",
     "commit-and-tag-version": "^13.4.0",
     "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
