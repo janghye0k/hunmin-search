@@ -6,23 +6,18 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const iifeBundle = join(root, 'dist', 'index.iife.js');
 
 test.describe('dist IIFE (HunminSearch global)', () => {
-  test('exposes createSearcher on globalThis after script load', async ({ page }) => {
+  test('exposes createSearcher and finds a Korean name by its initials', async ({ page }) => {
     await page.addScriptTag({ path: iifeBundle });
-    const t = await page.evaluate(() => {
-      const g = globalThis as unknown as { HunminSearch?: { createSearcher?: unknown } };
-      return typeof g.HunminSearch?.createSearcher;
+    const result = await page.evaluate(() => {
+      const api = (
+        globalThis as typeof globalThis & {
+          HunminSearch?: typeof import('../src');
+        }
+      ).HunminSearch;
+      const search = api?.createSearcher?.(['홍길동', '서울']);
+      return { createSearcherType: typeof api?.createSearcher, first: search?.('ㅎㄱ')[0]?.item };
     });
-    expect(t).toBe('function');
-  });
-
-  test('createSearcher returns expected hit for hangul query', async ({ page }) => {
-    await page.addScriptTag({ path: iifeBundle });
-    const first = await page.evaluate(() => {
-      const g = globalThis as unknown as {
-        HunminSearch: { createSearcher: (items: string[]) => (query: string) => { item: string }[] };
-      };
-      return g.HunminSearch.createSearcher(['홍길동', '서울'])('홍길')[0]?.item;
-    });
-    expect(first).toBe('홍길동');
+    expect(result.createSearcherType).toBe('function');
+    expect(result.first).toBe('홍길동');
   });
 });

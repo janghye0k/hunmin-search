@@ -1,14 +1,12 @@
-import { createRequire } from 'node:module';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, extname, join } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkgPath = join(root, 'package.json');
 const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
   scripts?: Record<string, string>;
-  engines?: { node?: string };
   devDependencies?: Record<string, string>;
 };
 const tsconfigPath = join(root, 'tsconfig.json');
@@ -19,9 +17,7 @@ const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8')) as {
     noEmit?: boolean;
   };
 };
-const ciPath = join(root, '.github', 'workflows', 'ci.yml');
 const readmePath = join(root, 'README.md');
-const licensePath = join(root, 'LICENSE');
 
 /** Relative import paths must not use a `.js` extension (Bundler + tsdown). */
 const relativeJsImport = /from\s+['"](\.\.?\/[^'"]+)\.js['"]/g;
@@ -36,11 +32,10 @@ function listSourceFiles(dir: string): string[] {
   return out;
 }
 
-describe('Bundler, src layout, and dist smoke', () => {
-  it('tsdown config declares the IIFE and ES2022 browser builds; node range follows engines', () => {
+describe('Bundler and src layout', () => {
+  it('tsdown config declares the IIFE and ES2022 browser builds', () => {
     const raw = readFileSync(join(root, 'tsdown.config.ts'), 'utf8');
     for (const s of ["'iife'", "'es2022'", "'HunminSearch'"]) expect(raw).toContain(s);
-    expect(pkg.engines?.node).toBe('^22.0.0 || ^24.0.0 || >=26.0.0');
   });
 
   it('pins TypeScript 6 (7 is excluded; typescript-eslint supports <6.1.0)', () => {
@@ -48,7 +43,13 @@ describe('Bundler, src layout, and dist smoke', () => {
   });
 
   it('declares typecheck script', () => {
-    expect(pkg.scripts?.typecheck).toBe('tsc --noEmit');
+    expect(pkg.scripts?.typecheck).toBe(
+      'tsc --noEmit && tsc --ignoreConfig --noEmit --strict --skipLibCheck --module esnext --moduleResolution bundler --target es2022 --types node test/search.test.ts'
+    );
+  });
+
+  it('excludes the integrated pack gate from prepublish:safe', () => {
+    expect(pkg.scripts?.['prepublish:safe']).toContain('--exclude test/package-gates.test.ts');
   });
 
   it('uses Bundler resolution and noEmit for editor / tsc --noEmit', () => {
@@ -66,24 +67,9 @@ describe('Bundler, src layout, and dist smoke', () => {
     }
     expect(hits, `Found .js relative imports:\n${hits.map((h) => `${h.file}: ${h.match}`).join('\n')}`).toEqual([]);
   });
-
-  it('loads built ESM entry from dist (run pnpm run build first)', async () => {
-    const entry = join(root, 'dist', 'index.mjs');
-    expect(existsSync(entry)).toBe(true);
-    const mod = await import(pathToFileURL(entry).href);
-    expect(typeof mod.createSearcher).toBe('function');
-  });
-
-  it('loads built CJS entry from dist via createRequire', () => {
-    const entry = join(root, 'dist', 'index.cjs');
-    expect(existsSync(entry)).toBe(true);
-    const require = createRequire(import.meta.url);
-    const mod = require(entry) as { createSearcher?: unknown };
-    expect(typeof mod.createSearcher).toBe('function');
-  });
 });
 
-describe('package scripts, CI workflow, and Playwright', () => {
+describe('package scripts and Playwright', () => {
   it('runs publint and attw inside the build instead of separate scripts', () => {
     expect(pkg.scripts?.build).toBe('tsdown');
     expect(pkg.scripts?.publint).toBeUndefined();
@@ -94,38 +80,13 @@ describe('package scripts, CI workflow, and Playwright', () => {
     expect(pkg.scripts?.['test:browser']).toMatch(/playwright/);
   });
 
-  it('defines GitHub Actions CI with typecheck, build, manifest diff check, test, and Playwright', () => {
-    const yml = readFileSync(ciPath, 'utf8');
-    expect(yml).toMatch(/pnpm run typecheck/);
-    expect(yml).toContain('pnpm run build');
-    expect(yml).toMatch(/^\s+run:\s+pnpm test\s*$/m);
-    expect(yml).toContain('git diff --exit-code -- package.json');
-    expect(yml).toMatch(/playwright/i);
-  });
-
-  it('orders typecheck before build and build before vitest in CI workflow', () => {
-    const yml = readFileSync(ciPath, 'utf8');
-    const iType = yml.indexOf('typecheck');
-    const iBuild = yml.indexOf('pnpm run build');
-    const iTest = yml.search(/^\s+run:\s+pnpm test\s*$/m);
-    expect(iType).toBeGreaterThanOrEqual(0);
-    expect(iBuild).toBeGreaterThanOrEqual(0);
-    expect(iTest).toBeGreaterThanOrEqual(0);
-    expect(iType).toBeLessThan(iBuild);
-    expect(iBuild).toBeLessThan(iTest);
-  });
-
   it('declares Playwright config at repo root', () => {
     const cfg = join(root, 'playwright.config.ts');
     expect(() => readFileSync(cfg, 'utf8')).not.toThrow();
   });
 });
 
-describe('README and LICENSE contract', () => {
-  it('ships LICENSE at repo root', () => {
-    expect(existsSync(licensePath)).toBe(true);
-  });
-
+describe('README contract', () => {
   it('documents Node ESM and CJS consumption with hunmin-search entry', () => {
     const body = readFileSync(readmePath, 'utf8');
     expect(body).toMatch(/from\s+['"]hunmin-search['"]/);

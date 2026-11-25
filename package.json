@@ -45,7 +45,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --ignoreConfig --noEmit --strict --skipLibCheck --module esnext --moduleResolution bundler --target es2022 --types node test/search.test.ts",
     "build": "tsdown",
     "prepack": "pnpm run build",
     "test": "vitest run",
@@ -55,7 +55,7 @@
     "bench": "vitest bench --run",
     "publish:check": "pnpm run typecheck && pnpm run build && pnpm test",
     "publish:dry-run": "pnpm publish --dry-run --no-git-checks --access public",
-    "prepublish:safe": "pnpm run typecheck && pnpm run build && pnpm exec vitest run --exclude test/pack-contents.test.ts",
+    "prepublish:safe": "pnpm run typecheck && pnpm run build && pnpm exec vitest run --exclude test/package-gates.test.ts",
     "prepublishOnly": "pnpm run prepublish:safe",
     "release": "commit-and-tag-version",
     "release:minor": "commit-and-tag-version --release-as minor",
