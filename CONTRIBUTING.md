@@ -25,6 +25,10 @@ pnpm run lint
 - Format: `pnpm run format` (Prettier).
 - Lint: `pnpm run lint` / `pnpm run lint:fix`.
 
+## Releasing
+
+Run `pnpm run publish:check` before publishing. `prepublishOnly` does not run the pack and dist gates in `test/package-gates.test.ts`. The full publish steps are in [docs/ko/npm-publish.md](docs/ko/npm-publish.md) (Korean only).
+
 ## Documentation packaging
 
-`docs/**` and root `English-README.md` are **not** listed in `package.json` `files` (and `docs/` is also listed in `.npmignore` as a safety net). They are for the git repository only. See [docs/DOCUMENTATION_LINKS.md](docs/DOCUMENTATION_LINKS.md). `pnpm test` runs a pack-contents check (see `test/pack-contents.test.ts`).
+`docs/**` and root `English-README.md` are **not** listed in `package.json` `files` (and `docs/` is also listed in `.npmignore` as a safety net). They are for the git repository only. See [docs/DOCUMENTATION_LINKS.md](docs/DOCUMENTATION_LINKS.md). `pnpm test` runs a pack-contents check (see `test/package-gates.test.ts`).

@@ -6,21 +6,10 @@ Canonical list for documentation and regression tests. **`src/index.ts`** is the
 
 | Symbol | Area |
 |--------|------|
-| `searchKoRanked` | Search |
-| `searchKoDetailed` | Search |
+| `createSearcher` | Search |
+| `highlight` | Search |
 | `disassemble` | Hangul |
-| `disassembleCompleteCharacter` | Hangul |
-| `disassembleToGroups` | Hangul |
 | `getChoseong` | Hangul |
-| `hasFinal` | Korean |
-| `isConsonant` | Korean |
-| `isKorean` | Korean |
-| `isSimilar` | Korean |
-| `isSyllable` | Korean |
-| `matchSubsequenceKo` | Score |
-| `levenshteinKo` | Score |
-| `levenshteinKoTrace` | Score |
-| `rankByKoPipeline` | Score |
 
 ## Type-only exports (TypeScript)
 
@@ -28,19 +17,12 @@ These do not exist at runtime; they are listed here for docs and API reviewers.
 
 | Type | Area |
 |------|------|
-| `SearchRankedHit` | Search |
-| `SearchDetailedHit` | Search |
-| `SearchDetailedOptions` | Search |
-| `SubsequenceAlignment` | Search |
-| `DisassembledSyllable` | Hangul |
-| `KoPipelineOptions` | Score |
-| `LevenshteinKoOptions` | Score |
-| `LevenshteinKoTraceOp` | Score |
-| `LevenshteinKoTraceResult` | Score |
-| `MatchSubsequenceKoOptions` | Score |
-| `RankedKoHit` | Score |
-| `SubsequenceMatchKind` | Score |
-| `SubsequenceMatchResult` | Score |
+| `Range` | Search |
+| `SearchResult` | Search |
+| `SearcherOptions` | Search |
+| `SearchOptions` | Search |
+| `Searcher` | Search |
+| `HighlightPart` | Search |
 
 ## Change process
 

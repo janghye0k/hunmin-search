@@ -2,7 +2,7 @@
   "name": "hunmin-search",
   "version": "0.2.0",
   "private": false,
-  "description": "Hunmin Search — Korean fuzzy search: subsequence filter + Korean-aware Levenshtein scoring. Zero runtime dependencies.",
+  "description": "Korean search-as-you-type: IME composing and choseong matching. Zero runtime dependencies.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -14,8 +14,8 @@
     "hunmin",
     "korean",
     "search",
-    "fuzzy",
-    "levenshtein",
+    "autocomplete",
+    "choseong",
     "subsequence"
   ],
   "repository": {

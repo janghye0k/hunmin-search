@@ -2,7 +2,16 @@
 
 [English README](./English-README.md) (파일명은 npm 자동 포함 규칙 회피용입니다.)
 
-한글·라틴 혼합 문자열에 대해 **부분열(subsequence) 필터**와 **한글 완화 Levenshtein** 점수로 후보를 정렬하는 소형 라이브러리입니다. **런타임 npm 의존성은 없습니다.**
+타이핑 중에 바로 쓰는 한글 검색 라이브러리입니다. IME 조합 중인 입력과 초성 입력을 그대로 일치시키고, 순위를 매긴 결과와 하이라이트 위치를 돌려줍니다. **런타임 npm 의존성은 없습니다.**
+
+```ts
+import { createSearcher, highlight } from 'hunmin-search';
+
+createSearcher(['홍길동', '서울'])('ㅎㄱ');
+// [{ item: '홍길동', index: 0, ranges: [[0, 2]] }]
+highlight('홍길동', [[0, 2]]);
+// [{ text: '홍길', match: true }, { text: '동', match: false }]
+```
 
 ## 문서
 
@@ -12,7 +21,7 @@
 
 ## 요구 사항
 
-- Node.js **18** 이상 권장 (`engines` 참고).
+- Node.js `^22.0.0 || ^24.0.0 || >=26.0.0` (`engines`). 그 밖의 버전은 지원이 끝난 버전이라 제외합니다.
 
 ## 설치
 
@@ -30,20 +39,18 @@ pnpm add ./path/to/hunmin-search
 ### ESM (`import`)
 
 ```js
-import { searchKoRanked, searchKoDetailed } from 'hunmin-search';
+import { createSearcher } from 'hunmin-search';
 
-searchKoRanked('홍길', ['홍길동', '서울']);
-// [{ value: '홍길동', score: number }]
-
-searchKoDetailed('길', ['홍길동'], { includeEditTrace: true });
+createSearcher(['홍길동', '서울'])('홍길');
+// [{ item: '홍길동', index: 0, ranges: [[0, 2]] }]
 ```
 
 ### CommonJS (`require`)
 
 ```js
-const { searchKoRanked, searchKoDetailed } = require('hunmin-search');
+const { createSearcher } = require('hunmin-search');
 
-searchKoRanked('홍길', ['홍길동', '서울']);
+createSearcher(['홍길동', '서울'])('홍길');
 ```
 
 같은 애플리케이션 안에서 **ESM `import`와 CJS `require`로 이 패키지를 동시에** 불러오면 [듀얼 패키지 이슈(dual package hazard)](https://nodejs.org/api/packages.html#dual-package-hazard)가 생길 수 있습니다. **한 가지 모듈 형식만** 쓰는 것을 권장합니다.
@@ -55,40 +62,105 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 ```html
 <script src="./node_modules/hunmin-search/dist/index.iife.js"></script>
 <script>
-  const hits = HunminSearch.searchKoRanked('홍길', ['홍길동', '서울']);
+  const hits = HunminSearch.createSearcher(['홍길동', '서울'])('홍길');
 </script>
 ```
 
 번들러(Vite·Webpack 등)에서는 `package.json`의 `exports` 서브패스 **`hunmin-search/browser`**를 쓰세요.
 
 ```js
-import { searchKoRanked } from 'hunmin-search/browser';
+import { createSearcher } from 'hunmin-search/browser';
 ```
 
 `import` 조건은 브라우저용 ESM 번들(`dist/browser.mjs`)로, `require` 조건은 CJS 빌드로 연결됩니다. IIFE(`dist/index.iife.js`)는 `<script src>`로 **파일 경로를 직접** 지정할 때만 쓰며 `exports`에는 포함되지 않습니다. 설치 도구·모노레포에 따라 경로가 달라질 수 있습니다.
 
-## API 요약
+## 화면에 붙이기
 
-- **`searchKoRanked(query, candidates, options?)`** — 통과한 후보만 점수 내림차순(`value`, `score`만).
-- **`searchKoDetailed(...)`** — 동일 정렬 + `subsequenceAlignments`, `editDistance`(부분열 실패 시 `null`), 선택 `editTrace`.
-- 저수준: `matchSubsequenceKo`, `levenshteinKo`, `rankByKoPipeline`, 한글 분해·초성 유틸 등은 패키지 엔트리에서 re-export.
+아래 예제의 `users`는 `{ id, name }` 객체 배열이고, `input`과 `list`는 이미 있는 DOM 요소입니다.
 
-## 제약·메모
-
-- 인덱스는 UTF-16 코드 유닛 기준입니다. 이모지 같은 서로게이트 쌍은 인덱스 두 칸을 씁니다.
-- 대소문자를 무시할 때는 문자열 전체를 `toLocaleLowerCase('en-US')`로 소문자화한 뒤 비교합니다. 편집 거리와 점수 분모도 소문자화한 문자열 길이를 씁니다.
-- `İ`처럼 소문자화하면 길이가 늘어나는 문자는 `subsequenceAlignments`와 `editTrace`의 인덱스가 원문의 같은 위치를 여러 번 가리킬 수 있습니다. 인덱스는 항상 원문 범위 안에 있습니다. 하이라이트할 때는 중복을 합쳐서 쓰면 됩니다. `editTrace`는 소문자화한 문자열의 편집 경로이며 원문을 그대로 고치는 명령 목록은 아닙니다.
-- 그리스 대문자 `Σ`는 단어 끝에 오는지에 따라 `σ`나 `ς`로 바뀝니다. 질의와 후보를 따로 소문자화하기 때문에 같은 `Σ`도 양쪽에서 다르게 바뀔 수 있습니다.
-- 유니코드 정규화는 하지 않습니다. 완성형(NFC)과 분해형(NFD)은 다른 문자열이므로 호출하기 전에 질의와 후보를 NFC로 맞추세요. 반환되는 인덱스는 넘겨준 문자열 기준입니다. 정규화하기 전의 원문을 화면에 보여준다면 위치 변환이 따로 필요합니다.
+### 바닐라
 
 ```ts
-const nfc = (s: string) => s.normalize('NFC');
-searchKoRanked(nfc(query), candidates.map(nfc));
+const search = createSearcher(users, { key: (u) => u.name });
+input.addEventListener('input', () => {
+  list.replaceChildren(
+    ...search(input.value, { limit: 20 }).map(({ item, ranges }) => {
+      const li = document.createElement('li');
+      for (const part of highlight(item.name, ranges)) {
+        const node = document.createElement(part.match ? 'mark' : 'span');
+        node.textContent = part.text; // innerHTML 사용 금지
+        li.append(node);
+      }
+      return li;
+    })
+  );
+});
 ```
 
-- 편집 거리는 항상 최소 편집 거리입니다. `similarSubstitutionCost`(기본 `0.01`)의 범위와 오류 처리는 [docs/ko/api-score.md](./docs/ko/api-score.md)에 있습니다.
-- 지원 Node 범위(`engines`)는 `^22.0.0 || ^24.0.0 || >=26.0.0`입니다. 18·20·23·25는 지원이 끝난 버전이라 제외합니다.
-- 긴 문자열이나 후보가 많으면 비용이 큽니다. `pnpm bench`로 환경별 성능을 확인할 수 있고, 배치 크기와 길이 상한은 호출하는 쪽에서 두는 것을 권장합니다.
+### React
+
+```tsx
+function UserSearch({ users }: { users: readonly User[] }) {
+  const [query, setQuery] = useState('');
+  const search = useMemo(() => createSearcher(users, { key: (u) => u.name }), [users]);
+
+  return (
+    <>
+      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <ul>
+        {search(query, { limit: 20 }).map(({ item, ranges }) => (
+          <li key={item.id}>
+            {highlight(item.name, ranges).map((p, i) => (p.match ? <mark key={i}>{p.text}</mark> : p.text))}
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+### 주의
+
+- `users` 참조는 안정적이어야 합니다. 렌더링마다 새 배열을 만들면 searcher도 매번 다시 만들어집니다.
+- `limit`을 주고 짧은 항목이 약 1만 개 이하인 목록이라면 보통 debounce가 필요 없습니다. 입력할 때마다 호출하세요. 그보다 크거나 조건이 다르면 사용하는 데이터로 직접 확인하세요.
+- 검색기는 만들 때의 목록을 전처리해 둡니다. 목록이 바뀌면 searcher를 다시 만드세요.
+- Vue는 조합 중에 `v-model`이 갱신되지 않으므로 `@input`을 쓰세요.
+
+## API 요약
+
+- **`createSearcher(items, { key }?)`** — 검색 함수를 만듭니다. 문자열 배열이면 `key`를 생략합니다. 검색 함수 `(query, { limit }?)`는 일치한 항목만 순위 순으로 `{ item, index, ranges }[]`로 돌려줍니다. 점수는 없으며 순서가 순위입니다.
+- **`highlight(text, ranges)`** — 문자열을 `{ text, match }[]` 조각으로 나눕니다.
+- **`getChoseong(text)`**, **`disassemble(text)`** — 초성 추출과 자모 분해.
+
+타입과 계약, 입력 상태별 일치 예는 [docs/ko/api-search.md](./docs/ko/api-search.md)에 있습니다.
+
+## 동작 규칙
+
+- **공백 무시**: 검색어와 항목의 공백은 비교에서 뺍니다(`홍길` → `홍 길동`).
+- **조합 중 입력**: 검색어의 마지막 글자는 아직 치는 중으로 봅니다(`간` → `가나`, `달` → `닭`, `고` → `과`).
+- **초성**: `ㅎㄱㄷ` → `홍길동`. 쌍자음은 구분하므로 `ㄱ`은 `까`와 일치하지 않습니다.
+- **마지막 글자 앞은 확정**: 앞의 완성형 음절은 똑같아야 합니다(`하ㄱ`은 `한글`과 일치하지 않음).
+- **대소문자**는 구분하지 않습니다.
+- **건너뛴 입력**: `홍동` → `홍길동`처럼 사이를 건너뛴 일치는 가장 아래 순위입니다.
+- **순위**: 아래 값을 차례로 비교하며 앞의 것이 우선합니다.
+  1. 등급: 완전 일치 → 접두 → 단어 시작에서 이어짐 → 중간에서 이어짐 → 건너뛴 일치
+  2. 일부만 일치한 글자 수가 적은 것
+  3. 첫 일치부터 마지막 일치까지의 길이가 짧은 것
+  4. 일치 시작 위치가 앞인 것
+  5. 항목이 짧은 것(공백 제외)
+  6. 원래 순서
+- **빈 검색어**(공백만 있는 경우 포함): 전체 항목을 원래 순서로 돌려주며 `ranges`는 `[]`입니다.
+- **`ranges`**: 원문 기준 UTF-16 인덱스 `[start, end)`입니다. 일부만 일치한 음절은 통째로 포함합니다.
+
+## 한계
+
+- 오타 허용과 여러 필드 검색은 없습니다.
+- 두벌식 입력 기준입니다. 천지인 입력의 중간 상태는 지원하지 않습니다.
+- 분해형(NFD)은 현대 한글만 합쳐서 비교합니다. 그 밖의 결합 문자는 정규화하지 않습니다.
+- 그리스어 어말 시그마처럼 문맥에 따른 대소문자 접기는 하지 않습니다(`ΟΣ`와 `ος`는 일치하지 않음).
+- ZWJ로 묶인 이모지는 묶음 전체가 강조된다고 보장하지 않습니다.
+- 긴 목록은 느릴 수 있습니다. 같은 문자가 반복되는 데이터이거나 `limit`을 생략하면 훨씬 느려질 수 있습니다. 사용하는 데이터로 직접 확인하세요.
+
 ## 개발
 
 - 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md) · 변경 기록: [CHANGELOG.md](./CHANGELOG.md)
@@ -104,7 +176,7 @@ pnpm run build
 pnpm test
 pnpm run lint
 pnpm run test:browser   # Playwright — Chromium 필요
-pnpm run bench           # vitest bench — 성능 벤치마크
+pnpm run bench           # vitest bench — 성능 벤치마크 (먼저 build 필요)
 ```
 
 ## 라이선스
