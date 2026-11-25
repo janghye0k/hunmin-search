@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.0](https://github.com/janghye0k/hunmin-search/compare/v0.2.0...v0.3.0) (2026-11-25)
+
+### ⚠ BREAKING CHANGES
+
+* dist file names changed (index.mjs, index.d.mts, browser.mjs, index.iife.js) and engines.node is now ^22.0.0 || ^24.0.0 || >=26.0.0. TypeScript 5 consumers are no longer guaranteed.
+* searchKoRanked, searchKoDetailed, rankByKoPipeline, matchSubsequenceKo, levenshteinKo, levenshteinKoTrace, isConsonant, isSyllable, isKorean, isSimilar, hasFinal, disassembleToGroups, disassembleCompleteCharacter and their types are removed. Use createSearcher and highlight.
+
+### build
+
+* migrate from tsup to tsdown ([29e7422](https://github.com/janghye0k/hunmin-search/commit/29e74220af51024d7cef1fdc7f3a9589a0b22315))
+
+### Features
+
+* add search-as-you-type core with createSearcher and highlight ([d9a45d3](https://github.com/janghye0k/hunmin-search/commit/d9a45d32be04e198d5ba61c7242e0ca9e0a511d3))
+* replace the public API with createSearcher ([ef8c8d2](https://github.com/janghye0k/hunmin-search/commit/ef8c8d216839bcf039597f66258e8af2ca58d8e2))
+
+### Bug Fixes
+
+* choose the best subsequence match ([110c164](https://github.com/janghye0k/hunmin-search/commit/110c16417336b031aaf1886b1cbb23242a761148))
+* run benchmarks on Vitest 5 ([7cd5877](https://github.com/janghye0k/hunmin-search/commit/7cd5877169bc17e8c53b58a790627661423088d8))
+
 ## [0.2.0](https://github.com/janghye0k/hunmin-search/compare/v0.1.2...v0.2.0) (2026-10-14)
 
 

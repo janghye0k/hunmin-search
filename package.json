@@ -1,6 +1,6 @@
 {
   "name": "hunmin-search",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "description": "Korean search-as-you-type: IME composing and choseong matching. Zero runtime dependencies.",
   "license": "MIT",
