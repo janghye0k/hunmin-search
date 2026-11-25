@@ -4,6 +4,8 @@ Detailed docs and the English overview live under the repository (`docs/**`, roo
 
 npm auto-includes extra root files whose names start with `readme` (case-insensitive), so the English overview intentionally avoids the `README*.md` naming pattern.
 
+Keep the maintainer publishing guide as a standalone document. Omit it from documentation links and indexes.
+
 ## GitHub (and local clone)
 
 Use **repository-relative** links from the repo root, for example:
@@ -12,15 +14,15 @@ Use **repository-relative** links from the repo root, for example:
 - English hub: `docs/en/README.md`
 - API surface: `docs/api-surface.md`
 
-In Markdown from the root `README.md`:
+For repository-only documents, use a relative link from the source Markdown file. For example, from the English documentation hub:
 
 ```markdown
-[한국어 문서 허브](./docs/ko/README.md)
+[한국어 문서 허브](../ko/README.md)
 ```
 
 ## npmjs.com package page
 
-Relative links on the registry page resolve against `https://www.npmjs.com/`, so deep links to `./docs/...` **do not work** for tarball-only paths.
+Use absolute GitHub URLs for repository documents linked from the root `README.md`, which is also displayed on the npm package page.
 
 **Recommended pattern** using `package.json` `repository`:
 

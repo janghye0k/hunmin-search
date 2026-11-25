@@ -6,7 +6,6 @@
 
 | 문서 | 내용 |
 |------|------|
-| [npm-publish.md](./npm-publish.md) | npm 배포 절차 (저장소 운영자용) |
 | [api-search.md](./api-search.md) | `createSearcher`, `highlight`, `getChoseong`, `disassemble` |
 
 영어 허브: [../en/README.md](../en/README.md) · 기여: [../../CONTRIBUTING.md](../../CONTRIBUTING.md) · 변경 기록: [../../CHANGELOG.md](../../CHANGELOG.md)

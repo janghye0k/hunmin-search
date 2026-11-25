@@ -7,7 +7,7 @@
 
 ## 사전 조건
 
-1. [npm](https://www.npmjs.com/) 계정이 있고, **`hunmin-search` 이름이 비어 있는지** 확인합니다(이미 사용 중이면 스코프 패키지 등으로 정책을 바꿔야 합니다).
+1. 사용할 npm 계정에 `hunmin-search` 패키지의 배포 권한이 있는지 확인합니다.
 2. 이 저장소 루트에서 **`pnpm install`**까지 끝난 상태입니다.
 3. `package.json`의 **`private`는 `false`**입니다. `true`면 publish가 거절됩니다.
 
@@ -19,7 +19,7 @@ PowerShell 예시입니다.
 npm login
 ```
 
-2FA를 쓰는 계정이면, npm 안내에 따라 **Access Token**을 만들고 `~/.npmrc`에 넣는 방식이 더 편할 수 있습니다. 토큰은 절대 저장소에 커밋하지 마세요.
+배포 중 추가 인증을 요청하면 npm의 안내를 따릅니다.
 
 ## 배포할 때마다: 권장 순서
 
@@ -50,13 +50,15 @@ git push origin --tags
 
 ### 3) 배포 직전 품질 검증
 
-CI와 동일한 전체 검증입니다(권장).
+타입, 빌드, 패키지 테스트를 실행합니다.
 
 ```powershell
 pnpm run publish:check
 ```
 
 `typecheck` → `build`(`publint`·`attw` 포함) → `test` 순서입니다.
+
+브라우저와 린트는 `pnpm run test:browser`와 `pnpm run lint`로 따로 확인합니다.
 
 ### 4) 실제로 올리기 전 리허설
 
@@ -70,7 +72,7 @@ pnpm run publish:dry-run
 pnpm publish --dry-run --no-git-checks --access public
 ```
 
-tarball에 무엇이 들어가는지, 레지스트리가 거절하지 않는지 확인합니다.
+tarball에 들어갈 파일을 확인합니다.
 
 ### 5) npm에 publish
 
@@ -95,7 +97,7 @@ pnpm publish --access public
 
 | 증상 | 원인 후보 |
 |------|-----------|
-| `403` 또는 이름 충돌 | `hunmin-search`가 이미 다른 계정에 등록됨 |
+| `403` 또는 이름 충돌 | npm 계정의 패키지 배포 권한이나 패키지 이름을 확인 |
 | 같은 버전 거절 | `package.json`의 `version`이 레지스트리에 이미 있음. `release`로 올리거나 수동으로 버전 증가 |
 | 로그인 만료 | `npm login` 또는 토큰 갱신 |
 | `git` 상태 경고 | `--no-git-checks`는 `publish:dry-run` / 스크립트에 이미 포함. 운영 정책에 맞게 유지 |

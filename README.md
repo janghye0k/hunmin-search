@@ -1,6 +1,6 @@
 # Hunmin Search (`hunmin-search`)
 
-[English README](./English-README.md) (파일명은 npm 자동 포함 규칙 회피용입니다.)
+[English README](https://github.com/janghye0k/hunmin-search/blob/main/English-README.md)
 
 타이핑 중에 바로 쓰는 한글 검색 라이브러리입니다. IME 조합 중인 입력과 초성 입력을 그대로 일치시키고, 순위를 매긴 결과와 하이라이트 위치를 돌려줍니다. **런타임 npm 의존성은 없습니다.**
 
@@ -15,9 +15,8 @@ highlight('홍길동', [[0, 2]]);
 
 ## 문서
 
-- **한국어 허브**: [docs/ko/README.md](./docs/ko/README.md) · **English hub**: [docs/en/README.md](./docs/en/README.md)
-- **공개 API 목록**: [docs/api-surface.md](./docs/api-surface.md)
-- npm **배포 tarball**에는 `dist/`, `README.md`(한국어), `LICENSE`만 들어갑니다(`package.json` `files`). 영어 개요는 저장소의 [`English-README.md`](./English-README.md)이며, 상세 문서는 `docs/`에 있습니다. 레지스트리 웹에서 `./docs/...` 링크가 깨지면 Git 호스팅에서 열거나 [docs/DOCUMENTATION_LINKS.md](./docs/DOCUMENTATION_LINKS.md)의 절대 URL 패턴을 쓰세요.
+- [한국어 문서](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/README.md) · [English documentation](https://github.com/janghye0k/hunmin-search/blob/main/docs/en/README.md)
+- [공개 API 목록](https://github.com/janghye0k/hunmin-search/blob/main/docs/api-surface.md)
 
 ## 요구 사항
 
@@ -25,14 +24,14 @@ highlight('홍길동', [[0, 2]]);
 
 ## 설치
 
-로컬 패키지나 Git 의존성으로 연결하거나, npm에서 `pnpm add hunmin-search`로 설치합니다. 버전·CHANGELOG는 [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md), 배포 절차는 [docs/ko/npm-publish.md](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/npm-publish.md)를 참고하세요.
+로컬 패키지나 Git 의존성으로 연결하거나, npm에서 `pnpm add hunmin-search`로 설치합니다. 버전별 변경 사항은 변경 기록을 참고하세요. [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md)
 
 ```bash
 pnpm add ./path/to/hunmin-search
 # 또는 빌드 후: pnpm pack → .tgz 설치
 ```
 
-배포 tarball에는 `dist/`, `README.md`, `LICENSE`만 포함됩니다(`files` 필드). `pnpm pack` 또는 `npm publish` 전에 `prepack`으로 `pnpm run build`가 실행됩니다.
+배포 tarball에는 `dist/`, `README.md`, `LICENSE`, `package.json`이 포함됩니다. `pnpm pack` 또는 `npm publish` 전에 `prepack`으로 `pnpm run build`가 실행됩니다.
 
 ## Node에서 쓰기
 
@@ -132,7 +131,7 @@ function UserSearch({ users }: { users: readonly User[] }) {
 - **`highlight(text, ranges)`** — 문자열을 `{ text, match }[]` 조각으로 나눕니다.
 - **`getChoseong(text)`**, **`disassemble(text)`** — 초성 추출과 자모 분해.
 
-타입과 계약, 입력 상태별 일치 예는 [docs/ko/api-search.md](./docs/ko/api-search.md)에 있습니다.
+타입과 입력 상태별 일치 예는 API 문서에서 확인할 수 있습니다. [검색 API](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/api-search.md)
 
 ## 동작 규칙
 
@@ -141,7 +140,7 @@ function UserSearch({ users }: { users: readonly User[] }) {
 - **초성**: `ㅎㄱㄷ` → `홍길동`. 쌍자음은 구분하므로 `ㄱ`은 `까`와 일치하지 않습니다.
 - **마지막 글자 앞은 확정**: 앞의 완성형 음절은 똑같아야 합니다(`하ㄱ`은 `한글`과 일치하지 않음).
 - **대소문자**는 구분하지 않습니다.
-- **건너뛴 입력**: `홍동` → `홍길동`처럼 사이를 건너뛴 일치는 가장 아래 순위입니다.
+- **건너뛴 입력**: `홍동` → `홍길동`처럼 사이를 건너뛴 일치는 가장 아래 등급입니다. 한 항목에 가능한 조합이 여럿이면 부분 일치가 적고, 강조 구간이 좁고, 시작이 빠른 순으로 고릅니다.
 - **순위**: 아래 값을 차례로 비교하며 앞의 것이 우선합니다.
   1. 등급: 완전 일치 → 접두 → 단어 시작에서 이어짐 → 중간에서 이어짐 → 건너뛴 일치
   2. 일부만 일치한 글자 수가 적은 것
@@ -177,6 +176,7 @@ pnpm test
 pnpm run lint
 pnpm run test:browser   # Playwright — Chromium 필요
 pnpm run bench           # vitest bench — 성능 벤치마크 (먼저 build 필요)
+node bench/measure-search.mjs chromium # 일반 데이터 1만 건의 질의별 p95 검사
 ```
 
 ## 라이선스

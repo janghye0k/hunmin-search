@@ -131,6 +131,8 @@ These are compared in order, and an earlier one wins.
 
 The grade outranks exactness. For example, searching `강가` with `가` reads it as `강` in progress and highlights the leading `강`. Exactness only counts within the same grade. A match with gaps is looked for only when there is no contiguous one.
 
+If an item has several matches with gaps, the search picks the one with the fewest partial matches, then the narrowest span, then the earliest start. For example, searching `가x낙 가y나` with `가나` highlights the later **가**y**나** because both characters match exactly.
+
 ## Empty query and highlighting
 
 - An empty or whitespace-only query returns every item in original order with `ranges: []`. `limit` still applies.

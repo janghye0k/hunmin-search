@@ -2,8 +2,6 @@
 
 **English** · [한국어 README](./README.md)
 
-This file is named **`English-README.md`** (not `README.en.md`) so npm’s pack rules do not auto-include an extra root `README*.md` file in the publish tarball. Phase 5 keeps the tarball to `dist/`, `README.md`, and `LICENSE` only.
-
 A Korean search-as-you-type library. It matches input that is still being composed by the IME, as well as initial consonants (choseong), and returns ranked results with highlight positions. **Zero runtime npm dependencies.**
 
 ```ts
@@ -19,7 +17,6 @@ highlight('홍길동', [[0, 2]]);
 
 - **English hub**: [docs/en/README.md](./docs/en/README.md) · **Korean hub**: [docs/ko/README.md](./docs/ko/README.md)
 - **Frozen public API list**: [docs/api-surface.md](./docs/api-surface.md)
-- On the npmjs.com package page, relative `./docs/...` links may not resolve. Open the same paths in your git host, or use the absolute URL pattern in [docs/DOCUMENTATION_LINKS.md](./docs/DOCUMENTATION_LINKS.md) (after filling `package.json` `repository`).
 
 ## Requirements
 
@@ -27,14 +24,14 @@ highlight('홍길동', [[0, 2]]);
 
 ## Install
 
-Use as a local path, Git dependency, or install from npm with `pnpm add hunmin-search`. Versioning and changelog: [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md). Publish steps: [docs/ko/npm-publish.md](https://github.com/janghye0k/hunmin-search/blob/main/docs/ko/npm-publish.md) (Korean only).
+Use as a local path, Git dependency, or install from npm with `pnpm add hunmin-search`. See the changelog for version history. [CHANGELOG.md](https://github.com/janghye0k/hunmin-search/blob/main/CHANGELOG.md)
 
 ```bash
 pnpm add ./path/to/hunmin-search
 # or after build: pnpm pack → install .tgz
 ```
 
-The publish tarball includes only `dist/`, `README.md`, and `LICENSE` (`files`). `prepack` runs `pnpm run build` before `pnpm pack` / `npm publish`.
+The publish tarball contains `dist/`, `README.md`, `LICENSE`, and `package.json`. `prepack` runs `pnpm run build` before `pnpm pack` or `npm publish`.
 
 ## Node usage
 
@@ -143,7 +140,7 @@ Types, contracts and matching examples per input state are in [docs/en/api-searc
 - **Choseong**: `ㅎㄱㄷ` → `홍길동`. Tense consonants are distinct, so `ㄱ` does not match `까`.
 - **Everything before the last character is final**: earlier complete syllables must be identical (`하ㄱ` does not match `한글`).
 - **Case** is ignored.
-- **Skipped input**: a match with gaps, such as `홍동` → `홍길동`, ranks lowest.
+- **Skipped input**: a match with gaps, such as `홍동` → `홍길동`, has the lowest grade. If an item has several possible matches with gaps, the search picks the one with the fewest partial matches, then the narrowest span, then the earliest start.
 - **Ranking**: these are compared in order, and an earlier one wins.
   1. Grade: exact → prefix → run starting at a word → run inside a word → match with gaps
   2. Fewer partially matched characters
@@ -179,6 +176,7 @@ pnpm test
 pnpm run lint
 pnpm run test:browser   # Playwright — Chromium required
 pnpm run bench           # vitest bench — performance benchmarks (build first)
+node bench/measure-search.mjs chromium # per-query p95 check on 10,000 mixed items
 ```
 
 ## License

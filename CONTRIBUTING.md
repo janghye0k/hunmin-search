@@ -27,7 +27,7 @@ pnpm run lint
 
 ## Releasing
 
-Run `pnpm run publish:check` before publishing. `prepublishOnly` does not run the pack and dist gates in `test/package-gates.test.ts`. The full publish steps are in [docs/ko/npm-publish.md](docs/ko/npm-publish.md) (Korean only).
+Run `pnpm run publish:check` before publishing. This includes the pack and dist tests in `test/package-gates.test.ts`, which `prepublishOnly` skips.
 
 ## Documentation packaging
 
