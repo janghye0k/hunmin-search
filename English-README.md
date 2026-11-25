@@ -52,10 +52,10 @@ Loading this package with **both ESM `import` and CJS `require` in one app** can
 
 ## Browser (no bundler)
 
-Loading `dist/index.global.cjs` exposes the global **`HunminSearch`** (tsup `globalName`).
+Loading `dist/index.iife.js` exposes the global **`HunminSearch`** (tsdown `globalName`).
 
 ```html
-<script src="./node_modules/hunmin-search/dist/index.global.cjs"></script>
+<script src="./node_modules/hunmin-search/dist/index.iife.js"></script>
 <script>
   const hits = HunminSearch.searchKoRanked('홍길', ['홍길동', '서울']);
 </script>
@@ -67,7 +67,7 @@ With bundlers (Vite, Webpack, …), use the `hunmin-search/browser` export subpa
 import { searchKoRanked } from 'hunmin-search/browser';
 ```
 
-Its `import` condition maps to a browser ESM bundle (`dist/index.browser.js`) and `require` to the CJS build. The IIFE (`dist/index.global.cjs`) is only for `<script src>` with a direct file path and is not part of `exports`. Paths vary by installer / monorepo layout.
+Its `import` condition maps to a browser ESM bundle (`dist/browser.mjs`) and `require` to the CJS build. The IIFE (`dist/index.iife.js`) is only for `<script src>` with a direct file path and is not part of `exports`. Paths vary by installer / monorepo layout.
 
 ## API summary
 
@@ -89,13 +89,13 @@ searchKoRanked(nfc(query), candidates.map(nfc));
 ```
 
 - The edit distance is always the true minimum. The range and error handling of `similarSubstitutionCost` (default `0.01`) are described in [docs/en/api-score.md](./docs/en/api-score.md).
-- Node 18 is end-of-life, but `engines` still says `>=18`. Use a supported LTS for new services.
+- Supported Node range (`engines`) is `^22.0.0 || ^24.0.0 || >=26.0.0`. Node 18, 20, 23 and 25 are end-of-life and excluded.
 - Long strings and many candidates are expensive. Run `pnpm bench` to measure in your environment, and cap batch size and length in the calling code.
 ## Development
 
 - Contributing: [CONTRIBUTING.md](./CONTRIBUTING.md) · Changelog: [CHANGELOG.md](./CHANGELOG.md)
 - Typecheck uses **`moduleResolution`: `Bundler`**; relative imports omit extensions.
-- **tsup** emits ESM (`.js`), CJS (`.cjs`), browser ESM (`.browser.js`), browser IIFE (`.global.cjs`), and declarations into `dist/`.
+- **tsdown** emits ESM (`index.mjs`), CJS (`index.cjs`), browser ESM (`browser.mjs`), browser IIFE (`index.iife.js`), and declarations (`.d.mts`, `.d.cts`) into `dist/`. The build also runs `publint` and `attw`. Building requires Node `^22.18.0 || ^24.11.0 || >=26.0.0`.
 
 Some Vitest suites expect **`dist` to exist**. Typical local / CI order:
 
@@ -105,8 +105,6 @@ pnpm run typecheck
 pnpm run build
 pnpm test
 pnpm run lint
-pnpm run publint
-pnpm run attw
 pnpm run test:browser   # Playwright — Chromium required
 pnpm run bench           # vitest bench — performance benchmarks
 ```

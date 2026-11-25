@@ -56,7 +56,7 @@ CI와 동일한 전체 검증입니다(권장).
 pnpm run publish:check
 ```
 
-`typecheck` → `build` → `test` → `publint` → `attw` 순서입니다.
+`typecheck` → `build`(`publint`·`attw` 포함) → `test` 순서입니다.
 
 ### 4) 실제로 올리기 전 리허설
 

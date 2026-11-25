@@ -2,6 +2,8 @@
 
 ## Setup
 
+Building requires Node `^22.18.0 || ^24.11.0 || >=26.0.0`.
+
 ```bash
 pnpm install
 pnpm run typecheck
@@ -10,7 +12,7 @@ pnpm test
 pnpm run lint
 ```
 
-Some checks mirror CI: `publint`, `attw`, and `pnpm run test:browser` (Playwright; Chromium required).
+`pnpm run build` includes the `publint` and `attw` checks and rewrites the generated fields of `package.json`; commit that result (CI fails on a diff). CI also runs `pnpm run test:browser` (Playwright; Chromium required).
 
 ## When you change the public API
 

@@ -6,7 +6,10 @@ import { describe, expect, it } from 'vitest';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pkgPath = join(root, 'package.json');
-const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { scripts?: Record<string, string> };
+const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
+  scripts?: Record<string, string>;
+  engines?: { node?: string };
+};
 const tsconfigPath = join(root, 'tsconfig.json');
 const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8')) as {
   compilerOptions: {
@@ -19,7 +22,7 @@ const ciPath = join(root, '.github', 'workflows', 'ci.yml');
 const readmePath = join(root, 'README.md');
 const licensePath = join(root, 'LICENSE');
 
-/** Relative import paths must not use a `.js` extension (Bundler + tsup). */
+/** Relative import paths must not use a `.js` extension (Bundler + tsdown). */
 const relativeJsImport = /from\s+['"](\.\.?\/[^'"]+)\.js['"]/g;
 
 function listSourceFiles(dir: string): string[] {
@@ -33,11 +36,10 @@ function listSourceFiles(dir: string): string[] {
 }
 
 describe('Bundler, src layout, and dist smoke', () => {
-  it('tsup targets Node 18 for ESM/CJS and browser for IIFE', () => {
-    const raw = readFileSync(join(root, 'tsup.config.ts'), 'utf8');
-    expect(raw).toContain('node18');
-    expect(raw).toContain("'browser'");
-    expect(raw).toContain("'node'");
+  it('tsdown config declares the IIFE and ES2022 browser builds; node range follows engines', () => {
+    const raw = readFileSync(join(root, 'tsdown.config.ts'), 'utf8');
+    for (const s of ["'iife'", "'es2022'", "'HunminSearch'"]) expect(raw).toContain(s);
+    expect(pkg.engines?.node).toBe('^22.0.0 || ^24.0.0 || >=26.0.0');
   });
 
   it('declares typecheck script', () => {
@@ -61,7 +63,7 @@ describe('Bundler, src layout, and dist smoke', () => {
   });
 
   it('loads built ESM entry from dist (run pnpm run build first)', async () => {
-    const entry = join(root, 'dist', 'index.js');
+    const entry = join(root, 'dist', 'index.mjs');
     expect(existsSync(entry)).toBe(true);
     const mod = await import(pathToFileURL(entry).href);
     expect(typeof mod.searchKoRanked).toBe('function');
@@ -78,23 +80,22 @@ describe('Bundler, src layout, and dist smoke', () => {
 });
 
 describe('package scripts, CI workflow, and Playwright', () => {
-  it('declares publint, attw, and Playwright browser smoke scripts', () => {
-    expect(pkg.scripts?.publint).toBeDefined();
-    expect(pkg.scripts?.publint).toMatch(/publint/);
-    expect(pkg.scripts?.attw).toBeDefined();
-    expect(pkg.scripts?.attw).toMatch(/attw/);
-    expect(pkg.scripts?.attw).toMatch(/--profile node16/);
-    expect(pkg.scripts?.['test:browser']).toBeDefined();
+  it('runs publint and attw inside the build instead of separate scripts', () => {
+    expect(pkg.scripts?.build).toBe('tsdown');
+    expect(pkg.scripts?.publint).toBeUndefined();
+    expect(pkg.scripts?.attw).toBeUndefined();
+    const raw = readFileSync(join(root, 'tsdown.config.ts'), 'utf8');
+    expect(raw).toContain('publint: true');
+    expect(raw).toContain("profile: 'node16'");
     expect(pkg.scripts?.['test:browser']).toMatch(/playwright/);
   });
 
-  it('defines GitHub Actions CI with typecheck, build, test, publint, attw, and Playwright', () => {
+  it('defines GitHub Actions CI with typecheck, build, manifest diff check, test, and Playwright', () => {
     const yml = readFileSync(ciPath, 'utf8');
     expect(yml).toMatch(/pnpm run typecheck/);
     expect(yml).toContain('pnpm run build');
     expect(yml).toMatch(/^\s+run:\s+pnpm test\s*$/m);
-    expect(yml).toMatch(/publint/);
-    expect(yml).toMatch(/attw/);
+    expect(yml).toContain('git diff --exit-code -- package.json');
     expect(yml).toMatch(/playwright/i);
   });
 
@@ -129,7 +130,7 @@ describe('README and LICENSE contract', () => {
 
   it('documents browser IIFE path, bundle file name, and globalName HunminSearch', () => {
     const body = readFileSync(readmePath, 'utf8');
-    expect(body).toMatch(/index\.global\.cjs/);
+    expect(body).toMatch(/index\.iife\.js/);
     expect(body).toMatch(/HunminSearch/);
     expect(body).toMatch(/<script/i);
   });

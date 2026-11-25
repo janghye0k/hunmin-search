@@ -8,7 +8,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..');
 const pkgPath = join(root, 'package.json');
 const nodeBin = process.env.HUNMIN_CONSUMER_NODE ?? process.execPath;
-const tsupBin = join(root, 'node_modules', 'tsup', 'dist', 'cli-default.js');
+const tsdownBin = join(root, 'node_modules', 'tsdown', 'dist', 'run.mjs');
 const tscBin = join(root, 'node_modules', 'typescript', 'lib', 'tsc.js');
 
 function listTarEntries(tgzPath: string): string[] {
@@ -105,12 +105,12 @@ describe('packed package consumed like a real dependency', { timeout: 180_000 },
     ]);
   });
 
-  it('a bundler (tsup/esbuild, browser platform) resolves ./browser to the ESM build', () => {
+  it('a bundler (tsdown, browser platform) resolves ./browser to the ESM build', () => {
     writeFileSync(
       join(consumer, 'entry.mjs'),
       `import { searchKoRanked } from 'hunmin-search/browser';\nconsole.log(searchKoRanked('홍길', ['홍길동', '서울'])[0]?.value);\n`,
     );
-    execFileSync(process.execPath, [tsupBin, 'entry.mjs', '--no-config', '--format', 'esm', '--platform', 'browser', '--out-dir', 'out'], {
+    execFileSync(process.execPath, [tsdownBin, 'entry.mjs', '--no-config', '--format', 'esm', '--platform', 'browser', '--out-dir', 'out'], {
       cwd: consumer,
       stdio: ['ignore', 'pipe', 'pipe'],
     });

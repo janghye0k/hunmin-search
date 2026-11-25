@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const iifeBundle = join(root, 'dist', 'index.global.cjs');
+const iifeBundle = join(root, 'dist', 'index.iife.js');
 
 test.describe('dist IIFE (HunminSearch global)', () => {
   test('exposes searchKoRanked on globalThis after script load', async ({ page }) => {

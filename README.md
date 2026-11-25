@@ -50,10 +50,10 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 
 ## 브라우저에서 쓰기
 
-번들러 없이 스크립트만 넣는 경우, 빌드 산출물 `dist/index.global.cjs`를 로드하면 전역 객체 **`HunminSearch`**(tsup `globalName`)가 생깁니다.
+번들러 없이 스크립트만 넣는 경우, 빌드 산출물 `dist/index.iife.js`를 로드하면 전역 객체 **`HunminSearch`**(tsdown `globalName`)가 생깁니다.
 
 ```html
-<script src="./node_modules/hunmin-search/dist/index.global.cjs"></script>
+<script src="./node_modules/hunmin-search/dist/index.iife.js"></script>
 <script>
   const hits = HunminSearch.searchKoRanked('홍길', ['홍길동', '서울']);
 </script>
@@ -65,7 +65,7 @@ searchKoRanked('홍길', ['홍길동', '서울']);
 import { searchKoRanked } from 'hunmin-search/browser';
 ```
 
-`import` 조건은 브라우저용 ESM 번들(`dist/index.browser.js`)로, `require` 조건은 CJS 빌드로 연결됩니다. IIFE(`dist/index.global.cjs`)는 `<script src>`로 **파일 경로를 직접** 지정할 때만 쓰며 `exports`에는 포함되지 않습니다. 설치 도구·모노레포에 따라 경로가 달라질 수 있습니다.
+`import` 조건은 브라우저용 ESM 번들(`dist/browser.mjs`)로, `require` 조건은 CJS 빌드로 연결됩니다. IIFE(`dist/index.iife.js`)는 `<script src>`로 **파일 경로를 직접** 지정할 때만 쓰며 `exports`에는 포함되지 않습니다. 설치 도구·모노레포에 따라 경로가 달라질 수 있습니다.
 
 ## API 요약
 
@@ -87,13 +87,13 @@ searchKoRanked(nfc(query), candidates.map(nfc));
 ```
 
 - 편집 거리는 항상 최소 편집 거리입니다. `similarSubstitutionCost`(기본 `0.01`)의 범위와 오류 처리는 [docs/ko/api-score.md](./docs/ko/api-score.md)에 있습니다.
-- Node 18은 공식 지원이 끝났지만 `engines`는 `>=18`을 유지합니다. 새 서비스에는 지원 중인 LTS를 쓰세요.
+- 지원 Node 범위(`engines`)는 `^22.0.0 || ^24.0.0 || >=26.0.0`입니다. 18·20·23·25는 지원이 끝난 버전이라 제외합니다.
 - 긴 문자열이나 후보가 많으면 비용이 큽니다. `pnpm bench`로 환경별 성능을 확인할 수 있고, 배치 크기와 길이 상한은 호출하는 쪽에서 두는 것을 권장합니다.
 ## 개발
 
 - 기여 가이드: [CONTRIBUTING.md](./CONTRIBUTING.md) · 변경 기록: [CHANGELOG.md](./CHANGELOG.md)
 - 소스 타입체크: **`moduleResolution`: `Bundler`**, 상대 경로 import는 **확장자 없이** 작성합니다.
-- 빌드는 **tsup**으로 `dist/`에 ESM(`.js`), CJS(`.cjs`), 브라우저 ESM(`.browser.js`), 브라우저 IIFE(`.global.cjs`), 선언 파일을 냅니다.
+- 빌드는 **tsdown**으로 `dist/`에 ESM(`index.mjs`), CJS(`index.cjs`), 브라우저 ESM(`browser.mjs`), 브라우저 IIFE(`index.iife.js`), 선언 파일(`.d.mts`·`.d.cts`)을 냅니다. `publint`와 `attw` 검사도 빌드에 포함됩니다. 빌드에는 Node `^22.18.0 || ^24.11.0 || >=26.0.0`이 필요합니다.
 
 일부 Vitest 테스트는 **`dist`가 있어야** 통과합니다. 로컬에서는 보통 아래 순서를 따릅니다(CI와 동일).
 
@@ -103,8 +103,6 @@ pnpm run typecheck
 pnpm run build
 pnpm test
 pnpm run lint
-pnpm run publint
-pnpm run attw
 pnpm run test:browser   # Playwright — Chromium 필요
 pnpm run bench           # vitest bench — 성능 벤치마크
 ```
