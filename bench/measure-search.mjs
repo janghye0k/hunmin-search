@@ -60,6 +60,8 @@ export function makeScenarios(seed) {
     return index % 10 === 0 ? item.normalize('NFD') : item;
   });
   const repeated = candidates((index) => '가'.repeat(40 - String(index).length) + index);
+  const subsequenceQueries = [2, 5, 10].map((length) => 'abcdefghij'.slice(0, length));
+  const subsequenceItems = candidates((index) => [...'abcdefghij'].join('x') + ' ' + index);
 
   return [
     {
@@ -79,6 +81,27 @@ export function makeScenarios(seed) {
       limit: 20,
     },
     { name: 'query-5000', recordOnly: true, items, queries: ['가'.repeat(5000)], limit: 20 },
+    {
+      name: 'subsequence-hit',
+      recordOnly: true,
+      items: subsequenceItems,
+      queries: subsequenceQueries,
+      limit: 20,
+    },
+    {
+      name: 'subsequence-late-miss',
+      recordOnly: true,
+      items: subsequenceItems,
+      queries: subsequenceQueries.map((query) => query.slice(0, -1) + 'z'),
+      limit: 20,
+    },
+    {
+      name: 'subsequence-dokkaebi',
+      recordOnly: true,
+      items: candidates((index) => '바x가나 ' + index),
+      queries: ['바간'],
+      limit: 20,
+    },
   ];
 }
 
@@ -152,7 +175,7 @@ async function measureNode(process) {
   return { runtime: process.version, measurements };
 }
 
-async function measureChromium() {
+async function measureChromium(bundlePath) {
   const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch();
   try {
@@ -162,7 +185,9 @@ async function measureChromium() {
     const { readFile } = await import('node:fs/promises');
     const { URL } = await import('node:url');
     for (const path of ['/bench/measure-search.mjs', '/dist/browser.mjs']) {
-      const body = await readFile(new URL('..' + path, import.meta.url));
+      const body = await readFile(
+        path === '/dist/browser.mjs' && bundlePath ? bundlePath : new URL('..' + path, import.meta.url)
+      );
       await page.route(origin + path, (route) => route.fulfill({ contentType: 'text/javascript', body }));
     }
     await page.goto(origin);
@@ -189,7 +214,7 @@ if (typeof globalThis.process !== 'undefined') {
     const mode = process.argv[2];
     if (mode !== 'node' && mode !== 'chromium') throw new Error('Specify node or chromium.');
     const { cpus, release, totalmem } = await import('node:os');
-    const result = mode === 'node' ? await measureNode(process) : await measureChromium();
+    const result = mode === 'node' ? await measureNode(process) : await measureChromium(process.argv[3]);
     const device = {
       platform: process.platform,
       release: release(),
