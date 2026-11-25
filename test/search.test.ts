@@ -133,8 +133,13 @@ describe('matchUnits: grade, partial and window', () => {
     ['가', 'x가가', 3, 0, [1]],
     // a later word start beats an earlier mid-word window
     ['가', 'x가 가', 2, 0, [2]],
-    // subsequence is tightened from the back
+    // subsequence uses the narrowest window
     ['가다', '가x가x다', 4, 0, [2, 4]],
+    ['abc', 'axbxbc', 4, 0, [0, 4, 5]],
+    ['abc', 'axbxbxc', 4, 0, [0, 4, 6]],
+    ['ㄱ나', '가x나', 4, 1, [0, 2]],
+    ['x난', 'xy나낞', 4, 1, [0, 2, 3]],
+    ['x난', 'xy나난', 4, 0, [0, 3]],
     // dokkaebi inside a subsequence keeps its two units adjacent
     ['홍간', '홍x가나', 4, 1, [0, 2, 3]],
   ])('%s in %s → grade %i, partial %i', (query, target, grade, partial, positions) => {
@@ -143,6 +148,76 @@ describe('matchUnits: grade, partial and window', () => {
 });
 
 describe('createSearcher', () => {
+  it.each([
+    [
+      'ab',
+      'axxxbayb',
+      [
+        [5, 6],
+        [7, 8],
+      ],
+    ],
+    [
+      '가나',
+      '가x낙 가y나',
+      [
+        [4, 5],
+        [6, 7],
+      ],
+    ],
+    [
+      'abc',
+      'axbxbc',
+      [
+        [0, 1],
+        [4, 6],
+      ],
+    ],
+    [
+      'x난',
+      'xy나낞',
+      [
+        [0, 1],
+        [2, 4],
+      ],
+    ],
+    [
+      'x난',
+      'xy나난',
+      [
+        [0, 1],
+        [3, 4],
+      ],
+    ],
+    [
+      '바간',
+      '바x가나',
+      [
+        [0, 1],
+        [2, 4],
+      ],
+    ],
+    ['가', '강가', [[0, 1]]],
+    [
+      '😀가나',
+      '😀x가 y나',
+      [
+        [0, 2],
+        [3, 5],
+        [7, 9],
+      ],
+    ],
+  ])('highlights %s in %s', (query, text, ranges) => {
+    expect(createSearcher([text])(query)).toEqual([{ item: text, index: 0, ranges }]);
+  });
+
+  it('ranks optimized subsequences before applying the limit', () => {
+    const search = createSearcher(['axxb', 'axxxbayb', 'axxxbayb']);
+    const hits = search('ab');
+    expect(hits.map(({ index }) => index)).toEqual([1, 2, 0]);
+    expect(search('ab', { limit: 1 })).toEqual(hits.slice(0, 1));
+  });
+
   const ranked = (query: string, items: string[]) => createSearcher(items)(query).map((r) => r.item);
 
   it.each([

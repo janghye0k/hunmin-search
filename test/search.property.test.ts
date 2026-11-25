@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import { expect, it } from 'vitest';
 import { getChoseong } from '../src/hangul';
-import { createSearcher, highlight } from '../src/search';
+import { createSearcher, highlight, matchUnits, toKey, toUnits } from '../src/search';
 
 const keys = 'rRseEfaqQtTdwWczxvgkoiOjpuPhynbml';
 const letters = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎㅏㅐㅑㅒㅓㅔㅕㅖㅗㅛㅜㅠㅡㅣ';
@@ -133,6 +133,7 @@ const oracleSyllables = new Map([
   ['각', 'ㄱㅏㄱ'],
   ['간', 'ㄱㅏㄴ'],
   ['나', 'ㄴㅏ'],
+  ['낙', 'ㄴㅏㄱ'],
 ]);
 
 // The oracle only needs normalization rules reachable from oracleTokens.
@@ -142,26 +143,36 @@ function oracleUnits(text: string): OracleUnit[] {
     const jamo = oracleSyllables.get(ch);
     if (jamo) return [{ ch, jamo, kind: 'syllable' }];
     if (ch === 'ㄳ') return [...'ㄱㅅ'].map((part) => ({ ch: part, jamo: part, kind: 'compatibility' }));
-    if (ch === 'ㄱ' || ch === 'ㄲ' || ch === 'ㅘ') {
+    if (ch === 'ㄱ' || ch === 'ㄲ' || ch === 'ㄴ' || ch === 'ㅘ') {
       return [{ ch, jamo: ch === 'ㅘ' ? 'ㅗㅏ' : ch, kind: 'compatibility' }];
     }
     return [...ch.toLowerCase()].map((part) => ({ ch: part, jamo: part, kind: 'other' }));
   });
 }
 
-function exists(query: string, text: string): boolean {
+function oraclePaths(query: string, text: string) {
   const queries = oracleUnits(query);
   const candidates = oracleUnits(text);
 
-  function choose(queryIndex: number, start: number): boolean {
-    if (queryIndex === queries.length) return true;
+  function* choose(
+    queryIndex: number,
+    start: number,
+    positions: number[],
+    partial: number
+  ): Generator<{ positions: number[]; partial: number }> {
+    if (queryIndex === queries.length) {
+      yield { positions, partial };
+      return;
+    }
     const q = queries[queryIndex];
     const last = queryIndex === queries.length - 1;
     for (let index = start; index < candidates.length; index++) {
       const c = candidates[index];
       const single =
         q.kind === 'compatibility' || (q.kind === 'syllable' && last) ? c.jamo.startsWith(q.jamo) : c.ch === q.ch;
-      if (single && choose(queryIndex + 1, index + 1)) return true;
+      if (single) {
+        yield* choose(queryIndex + 1, index + 1, [...positions, index], partial + Number(q.ch !== c.ch));
+      }
 
       const d = candidates[index + 1];
       if (
@@ -175,12 +186,11 @@ function exists(query: string, text: string): boolean {
         d.kind !== 'other' &&
         d.jamo.startsWith(q.jamo.slice(-1))
       )
-        return true;
+        yield { positions: [...positions, index, index + 1], partial: partial + 1 };
     }
-    return false;
   }
 
-  return choose(0, 0);
+  return choose(0, 0, [], 0);
 }
 
 it('agrees with exhaustive subsequence existence', () => {
@@ -188,10 +198,56 @@ it('agrees with exhaustive subsequence existence', () => {
     fc.property(oracleCases, ([query, candidate]) => {
       const q = query.join('');
       const text = candidate.join('');
-      expect(createSearcher([text])(q).length > 0).toBe(exists(q, text));
+      expect(createSearcher([text])(q).length > 0).toBe(!oraclePaths(q, text).next().done);
     }),
     { numRuns: 500 }
   );
+});
+
+it('returns a valid subsequence path with the exhaustive optimum', () => {
+  const token = fc.constantFrom('가', '나', '낙', '간', 'ㄴ', 'x');
+  const candidates = fc.array(token, { minLength: 1, maxLength: 10 });
+  const queries = fc.array(token, { minLength: 1, maxLength: 4 });
+  let competingCases = 0;
+  fc.assert(
+    fc.property(
+      fc.oneof(
+        fc.tuple(queries, candidates),
+        candidates.chain((candidate) =>
+          fc.tuple(
+            fc.subarray(candidate, { minLength: 1, maxLength: Math.min(4, candidate.length) }),
+            fc.constant(candidate)
+          )
+        )
+      ),
+      ([query, candidate]) => {
+        const paths = [...oraclePaths(query.join(''), candidate.join(''))];
+        if (paths.some(({ positions }) => positions.every((p, i) => p === positions[0] + i))) return;
+        const q = toUnits(query.join(''));
+        const t = toUnits(candidate.join(''));
+        const match = matchUnits(q, toKey(q), t, toKey(t));
+        if (!paths.length) {
+          expect(match).toBeNull();
+          return;
+        }
+        if (paths.length > 1) competingCases++;
+        expect(match?.grade).toBe(4);
+        const score = ({ positions, partial }: (typeof paths)[number]) =>
+          [partial, positions.at(-1)! - positions[0], positions[0]] as const;
+        const [best] = paths.sort((a, b) => {
+          const [ap, aw, as] = score(a);
+          const [bp, bw, bs] = score(b);
+          return ap - bp || aw - bw || as - bs;
+        });
+        const returned = paths.find(({ positions }) => positions.join(',') === match?.positions.join(','));
+        expect(returned).toBeDefined();
+        expect(returned?.partial).toBe(match?.partial);
+        expect(score(returned!)).toEqual(score(best));
+      }
+    ),
+    { seed: 42, numRuns: 2_000 }
+  );
+  expect(competingCases).toBeGreaterThan(0);
 });
 
 const mixedText = fc.array(

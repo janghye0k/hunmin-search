@@ -143,28 +143,83 @@ export function matchUnits(
   }
   if (best) return best;
 
-  // Greedy subsequence: the earliest position for each query unit.
-  const positions: number[] = [];
+  // The earliest match leaves the most room for the remaining query units.
   let from = 0;
   for (const [i, q] of query.entries()) {
     let p = targetKey.indexOf(queryKey[i]!, from);
     while (p >= 0 && !consume(q, target, p, i === m - 1)) p = targetKey.indexOf(queryKey[i]!, p + 1);
     if (p < 0) return null;
-    positions.push(p);
     from = p + 1;
   }
 
-  // Keep the last position and pull the earlier ones as far right as they go.
-  for (let i = m - 2; i >= 0; i--) {
-    for (let p = positions[i + 1]! - 1; p > positions[i]!; p--) {
-      if (consume(query[i]!, target, p, false)) {
-        positions[i] = p;
-        break;
+  return matchSubsequence(query, queryKey, target, targetKey);
+}
+
+function matchSubsequence(
+  query: readonly Unit[],
+  queryKey: string,
+  target: readonly Unit[],
+  targetKey: string
+): Match | null {
+  const n = target.length;
+  const predecessors = new Int32Array(query.length * n);
+  let previousStarts = new Int32Array(n);
+  let currentStarts = new Int32Array(n);
+  let previousPartials = new Int32Array(n);
+  let currentPartials = new Int32Array(n);
+  let bestColumn = -1;
+  let bestPartial = Infinity;
+  let bestWidth = Infinity;
+  let bestStart = Infinity;
+
+  for (const [i, q] of query.entries()) {
+    const last = i === query.length - 1;
+    currentStarts.fill(-1);
+    let predecessor = -1;
+    for (let p = i; p < n; p++) {
+      const left = p - 1;
+      // Only the final row can consume two units, so every earlier match ends at its column.
+      if (i > 0 && previousStarts[left]! >= 0) {
+        if (
+          predecessor < 0 ||
+          previousPartials[left]! < previousPartials[predecessor]! ||
+          (previousPartials[left] === previousPartials[predecessor] &&
+            previousStarts[left]! >= previousStarts[predecessor]!)
+        ) {
+          predecessor = left;
+        }
+      }
+      if ((i > 0 && predecessor < 0) || queryKey[i] !== targetKey[p]) continue;
+      const used = consume(q, target, p, last);
+      if (!used) continue;
+
+      const start = i === 0 ? p : previousStarts[predecessor]!;
+      const partial = (i === 0 ? 0 : previousPartials[predecessor]!) + Number(used === 2 || target[p]!.ch !== q.ch);
+      predecessors[i * n + p] = predecessor;
+      currentStarts[p] = start;
+      currentPartials[p] = partial;
+
+      if (last) {
+        const width = p + used - 1 - start;
+        if ((partial - bestPartial || width - bestWidth || start - bestStart) < 0) {
+          bestColumn = p;
+          bestPartial = partial;
+          bestWidth = width;
+          bestStart = start;
+        }
       }
     }
+    [previousStarts, currentStarts] = [currentStarts, previousStarts];
+    [previousPartials, currentPartials] = [currentPartials, previousPartials];
   }
 
-  return { grade: 4, ...evaluate(query, target, positions)! };
+  if (bestColumn < 0) return null;
+  const starts = new Array<number>(query.length);
+  for (let i = query.length - 1; i >= 0; i--) {
+    starts[i] = bestColumn;
+    bestColumn = predecessors[i * n + bestColumn]!;
+  }
+  return { grade: 4, ...evaluate(query, target, starts)! };
 }
 
 /** [start, end) — 원문 UTF-16 인덱스. 오름차순, 겹침·인접 없음. */

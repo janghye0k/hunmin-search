@@ -159,9 +159,11 @@ it.each(['index.mjs', 'index.cjs', 'browser.mjs', 'index.iife.js'] as const)(
     expect(map.mappings).not.toBe('');
     expect(map.sourcesContent.some((content: string) => content.length > 0)).toBe(true);
     const lines = code.split('\n');
-    const generatedLine = lines.findIndex((line) => line.includes('function createSearcher'));
+    const declaration = /function createSearcher\(|\.createSearcher\s*=\s*function\s*\(/;
+    const generatedLine = lines.findIndex((line) => declaration.test(line));
     expect(generatedLine).toBeGreaterThanOrEqual(0);
-    const mapped = new SourceMap(map).findEntry(generatedLine, lines[generatedLine]!.indexOf('createSearcher'));
+    const match = declaration.exec(lines[generatedLine]!)!;
+    const mapped = new SourceMap(map).findEntry(generatedLine, match.index + match[0].indexOf('function'));
     expect(mapped.originalSource).toMatch(/src[/\\]search\.ts$/);
     const sourceIndex = map.sources.indexOf(mapped.originalSource);
     expect(map.sourcesContent[sourceIndex].split('\n')[mapped.originalLine]).toMatch(/\bfunction\s+createSearcher\b/);

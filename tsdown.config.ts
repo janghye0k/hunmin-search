@@ -13,6 +13,7 @@ const exports: UserConfig['exports'] = {
 // Rolldown은 기본으로 JSDoc 주석을 JS에 남긴다. 제거하지 않으면 크기가 약 43% 늘어난다.
 // d.ts의 JSDoc은 그대로 남는다.
 const outputOptions = { comments: { jsdoc: false } };
+const minify = { mangle: false };
 
 export default defineConfig([
   {
@@ -20,6 +21,7 @@ export default defineConfig([
     format: ['esm', 'cjs'],
     sourcemap: true,
     outputOptions,
+    minify,
     exports,
     publint: true,
     attw: { profile: 'node16', level: 'error' },
@@ -34,6 +36,7 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     outputOptions,
+    minify,
     exports,
     failOnWarn: 'ci-only',
   },
@@ -46,6 +49,7 @@ export default defineConfig([
     dts: false,
     sourcemap: true,
     outputOptions,
+    minify,
     failOnWarn: 'ci-only',
   },
 ]);
