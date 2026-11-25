@@ -1,5 +1,12 @@
-import { bench, describe } from 'vitest';
+import { describe, test } from 'vitest';
 import { levenshteinKo, matchSubsequenceKo, searchKoRanked } from '../src';
+
+function registerBenchmark(name: string, workload: () => void): void {
+  test(name, async ({ bench }) => {
+    const result = await bench(name, workload).run();
+    process.stdout.write(`${name}: ${result.throughput.mean.toFixed(2)} ops/s\n`);
+  });
+}
 
 const KOREAN_NAMES = [
   '김민수',
@@ -47,57 +54,57 @@ const C10K = generateCandidates(10_000);
 const M1K = generateMatchHeavy(1_000);
 
 describe('searchKoRanked — filter-heavy (few matches)', () => {
-  bench('100 candidates', () => {
+  registerBenchmark('100 candidates', () => {
     searchKoRanked('홍길', C100);
   });
 
-  bench('1K candidates', () => {
+  registerBenchmark('1K candidates', () => {
     searchKoRanked('홍길', C1K);
   });
 
-  bench('10K candidates', () => {
+  registerBenchmark('10K candidates', () => {
     searchKoRanked('홍길', C10K);
   });
 });
 
 describe('searchKoRanked — match-heavy (most pass subsequence)', () => {
-  bench('1K candidates, jamo query', () => {
+  registerBenchmark('1K candidates, jamo query', () => {
     searchKoRanked('ㄱ', M1K);
   });
 
-  bench('1K candidates, syllable query', () => {
+  registerBenchmark('1K candidates, syllable query', () => {
     searchKoRanked('강', M1K);
   });
 });
 
 describe('levenshteinKo', () => {
-  bench('short (3 vs 3)', () => {
+  registerBenchmark('short (3 vs 3)', () => {
     levenshteinKo('가나다', '가나라');
   });
 
-  bench('medium (20 vs 20)', () => {
+  registerBenchmark('medium (20 vs 20)', () => {
     levenshteinKo('가'.repeat(20), '나'.repeat(20));
   });
 
-  bench('long (100 vs 100)', () => {
+  registerBenchmark('long (100 vs 100)', () => {
     levenshteinKo('가'.repeat(100), '나'.repeat(100));
   });
 
-  bench('asymmetric (3 vs 100)', () => {
+  registerBenchmark('asymmetric (3 vs 100)', () => {
     levenshteinKo('가나다', '나'.repeat(100));
   });
 });
 
 describe('matchSubsequenceKo', () => {
-  bench('short query, short haystack', () => {
+  registerBenchmark('short query, short haystack', () => {
     matchSubsequenceKo('홍길', '홍길동');
   });
 
-  bench('short query, long haystack', () => {
+  registerBenchmark('short query, long haystack', () => {
     matchSubsequenceKo('홍길', '김철수홍길동이영희박지성');
   });
 
-  bench('jamo query', () => {
+  registerBenchmark('jamo query', () => {
     matchSubsequenceKo('ㅎㄱ', '홍길동');
   });
 });
