@@ -9,6 +9,7 @@ const pkgPath = join(root, 'package.json');
 const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
   scripts?: Record<string, string>;
   engines?: { node?: string };
+  devDependencies?: Record<string, string>;
 };
 const tsconfigPath = join(root, 'tsconfig.json');
 const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8')) as {
@@ -40,6 +41,10 @@ describe('Bundler, src layout, and dist smoke', () => {
     const raw = readFileSync(join(root, 'tsdown.config.ts'), 'utf8');
     for (const s of ["'iife'", "'es2022'", "'HunminSearch'"]) expect(raw).toContain(s);
     expect(pkg.engines?.node).toBe('^22.0.0 || ^24.0.0 || >=26.0.0');
+  });
+
+  it('pins TypeScript 6 (7 is excluded; typescript-eslint supports <6.1.0)', () => {
+    expect(pkg.devDependencies?.typescript).toBe('~6.0.3');
   });
 
   it('declares typecheck script', () => {
