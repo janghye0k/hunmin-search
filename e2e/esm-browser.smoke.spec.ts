@@ -24,8 +24,8 @@ test.describe('dist ESM browser bundle (hunmin-search/browser)', () => {
     const result = await page.evaluate(async (url) => {
       const mod = await import(/* @vite-ignore */ url);
       return {
-        type: typeof mod.searchKoRanked,
-        first: mod.searchKoRanked('홍길', ['홍길동', '서울'])[0]?.value,
+        type: typeof mod.createSearcher,
+        first: mod.createSearcher(['홍길동', '서울'])('홍길')[0]?.item,
       };
     }, `${origin}/browser.mjs`);
 

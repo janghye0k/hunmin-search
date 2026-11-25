@@ -77,14 +77,18 @@ describe('packed package consumed like a real dependency', { timeout: 180_000 },
     const pkgDir = join(consumer, 'node_modules', 'hunmin-search');
     mkdirSync(pkgDir, { recursive: true });
     writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module' }));
-    execFileSync('tar', ['-xzf', basename(tgzPath), '-C', 'consumer/node_modules/hunmin-search', '--strip-components=1'], { cwd: dest });
+    execFileSync(
+      'tar',
+      ['-xzf', basename(tgzPath), '-C', 'consumer/node_modules/hunmin-search', '--strip-components=1'],
+      { cwd: dest }
+    );
   });
 
   it('Node ESM resolves root and ./browser through exports', () => {
     const esm = `
-      import { searchKoRanked as rootFn } from 'hunmin-search';
-      import { searchKoRanked as browserFn } from 'hunmin-search/browser';
-      console.log(JSON.stringify([typeof rootFn, typeof browserFn, rootFn('홍길', ['홍길동', '서울'])[0]?.value, browserFn('홍길', ['홍길동', '서울'])[0]?.value]));
+      import { createSearcher as rootFn } from 'hunmin-search';
+      import { createSearcher as browserFn } from 'hunmin-search/browser';
+      console.log(JSON.stringify([typeof rootFn, typeof browserFn, rootFn(['홍길동', '서울'])('홍길')[0]?.item, browserFn(['홍길동', '서울'])('홍길')[0]?.item]));
     `;
     expect(JSON.parse(runNode(consumer, ['--input-type=module', '-e', esm]))).toEqual([
       'function',
@@ -98,7 +102,7 @@ describe('packed package consumed like a real dependency', { timeout: 180_000 },
     const cjs = `
       const root = require('hunmin-search');
       const browser = require('hunmin-search/browser');
-      console.log(JSON.stringify([typeof root.searchKoRanked, typeof browser.searchKoRanked, browser.searchKoRanked('홍길', ['홍길동'])[0]?.value]));
+      console.log(JSON.stringify([typeof root.createSearcher, typeof browser.createSearcher, browser.createSearcher(['홍길동', '서울'])('홍길')[0]?.item]));
     `;
     expect(JSON.parse(runNode(consumer, ['--input-type=commonjs', '-e', cjs]))).toEqual([
       'function',
@@ -110,12 +114,16 @@ describe('packed package consumed like a real dependency', { timeout: 180_000 },
   it('a bundler (tsdown, browser platform) resolves ./browser to the ESM build', () => {
     writeFileSync(
       join(consumer, 'entry.mjs'),
-      `import { searchKoRanked } from 'hunmin-search/browser';\nconsole.log(searchKoRanked('홍길', ['홍길동', '서울'])[0]?.value);\n`,
+      `import { createSearcher } from 'hunmin-search/browser';\nconsole.log(createSearcher(['홍길동', '서울'])('홍길')[0]?.item);\n`
     );
-    execFileSync(process.execPath, [tsdownBin, 'entry.mjs', '--no-config', '--format', 'esm', '--platform', 'browser', '--out-dir', 'out'], {
-      cwd: consumer,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    execFileSync(
+      process.execPath,
+      [tsdownBin, 'entry.mjs', '--no-config', '--format', 'esm', '--platform', 'browser', '--out-dir', 'out'],
+      {
+        cwd: consumer,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
     const bundle = readFileSync(join(consumer, 'out', 'entry.js'), 'utf8');
     expect(bundle).not.toContain('__commonJS'); // resolved to ESM, not wrapped CJS
     expect(runNode(consumer, ['out/entry.js'])).toBe('홍길동');
@@ -125,14 +133,24 @@ describe('packed package consumed like a real dependency', { timeout: 180_000 },
     writeFileSync(
       join(consumer, 'tsconfig.json'),
       JSON.stringify({
-        compilerOptions: { module: 'esnext', moduleResolution: 'bundler', target: 'es2022', strict: true, noEmit: true, types: [] },
+        compilerOptions: {
+          module: 'esnext',
+          moduleResolution: 'bundler',
+          target: 'es2022',
+          strict: true,
+          noEmit: true,
+          types: [],
+        },
         include: ['types-check.ts'],
-      }),
+      })
     );
     writeFileSync(
       join(consumer, 'types-check.ts'),
-      `import { searchKoRanked } from 'hunmin-search/browser';\nconst hits: { value: string; score: number }[] = searchKoRanked('a', ['a']);\nexport default hits;\n`,
+      `import { createSearcher, type SearchResult } from 'hunmin-search/browser';\nconst hits: SearchResult<'a'>[] = createSearcher(['a'] as const)('a');\nexport default hits;\n`
     );
-    execFileSync(process.execPath, [tscBin, '-p', 'tsconfig.json'], { cwd: consumer, stdio: ['ignore', 'pipe', 'pipe'] });
+    execFileSync(process.execPath, [tscBin, '-p', 'tsconfig.json'], {
+      cwd: consumer,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
   });
 });

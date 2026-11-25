@@ -36,9 +36,8 @@ if (process.argv[2] === '--installed') {
     assert.deepEqual(Object.keys(api).sort(), baseline[name].keys, name);
     assert.equal(Object.hasOwn(api, 'default'), baseline[name].hasDefault, name);
     assert.equal(Object.hasOwn(api, '__esModule'), baseline[name].hasEsModule, name);
-    const ranked = JSON.parse(JSON.stringify(api.searchKoRanked('홍길', ['홍길동', '서울'])));
-    assert.deepEqual(ranked, baseline[name].ranked, name);
-    assert.equal(ranked[0]?.value, '홍길동', name);
+    const results = JSON.parse(JSON.stringify(api.createSearcher(['서울', '홍길동'])('홍길')));
+    assert.deepEqual(results, baseline[name].results, name);
   }
   assert.equal(rootRequire[Symbol.toStringTag], 'Module');
   assert.equal(browserIife[Symbol.toStringTag], 'Module');

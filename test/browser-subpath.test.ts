@@ -23,11 +23,11 @@ describe('dist outputs (requires `pnpm run build`)', () => {
     'contains %s',
     (file) => {
       expect(existsSync(join(root, 'dist', file)), `dist/${file} missing — run pnpm run build`).toBe(true);
-    },
+    }
   );
 
-  it('browser ESM bundle exports the public search functions', () => {
+  it('browser ESM bundle exports createSearcher', () => {
     const body = readFileSync(join(root, 'dist', 'browser.mjs'), 'utf8');
-    expect(body).toMatch(/export\s*\{[^}]*searchKoRanked/);
+    expect(body).toMatch(/export\s*\{[^}]*createSearcher/);
   });
 });

@@ -71,16 +71,15 @@ describe('Bundler, src layout, and dist smoke', () => {
     const entry = join(root, 'dist', 'index.mjs');
     expect(existsSync(entry)).toBe(true);
     const mod = await import(pathToFileURL(entry).href);
-    expect(typeof mod.searchKoRanked).toBe('function');
-    expect(typeof mod.matchSubsequenceKo).toBe('function');
+    expect(typeof mod.createSearcher).toBe('function');
   });
 
   it('loads built CJS entry from dist via createRequire', () => {
     const entry = join(root, 'dist', 'index.cjs');
     expect(existsSync(entry)).toBe(true);
     const require = createRequire(import.meta.url);
-    const mod = require(entry) as { searchKoRanked?: unknown };
-    expect(typeof mod.searchKoRanked).toBe('function');
+    const mod = require(entry) as { createSearcher?: unknown };
+    expect(typeof mod.createSearcher).toBe('function');
   });
 });
 

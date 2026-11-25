@@ -1,136 +1,61 @@
 {
   "rootImport": {
-    "keys": [
-      "disassemble",
-      "disassembleCompleteCharacter",
-      "disassembleToGroups",
-      "getChoseong",
-      "hasFinal",
-      "isConsonant",
-      "isKorean",
-      "isSimilar",
-      "isSyllable",
-      "levenshteinKo",
-      "levenshteinKoTrace",
-      "matchSubsequenceKo",
-      "rankByKoPipeline",
-      "searchKoDetailed",
-      "searchKoRanked"
-    ],
+    "keys": ["createSearcher", "disassemble", "getChoseong", "highlight"],
     "hasDefault": false,
     "hasEsModule": false,
-    "ranked": [
+    "results": [
       {
-        "value": "홍길동",
-        "score": 0.6666666666666666
+        "item": "홍길동",
+        "index": 1,
+        "ranges": [[0, 2]]
       }
     ]
   },
   "rootRequire": {
-    "keys": [
-      "disassemble",
-      "disassembleCompleteCharacter",
-      "disassembleToGroups",
-      "getChoseong",
-      "hasFinal",
-      "isConsonant",
-      "isKorean",
-      "isSimilar",
-      "isSyllable",
-      "levenshteinKo",
-      "levenshteinKoTrace",
-      "matchSubsequenceKo",
-      "rankByKoPipeline",
-      "searchKoDetailed",
-      "searchKoRanked"
-    ],
+    "keys": ["createSearcher", "disassemble", "getChoseong", "highlight"],
     "hasDefault": false,
     "hasEsModule": false,
-    "ranked": [
+    "results": [
       {
-        "value": "홍길동",
-        "score": 0.6666666666666666
+        "item": "홍길동",
+        "index": 1,
+        "ranges": [[0, 2]]
       }
     ]
   },
   "browserImport": {
-    "keys": [
-      "disassemble",
-      "disassembleCompleteCharacter",
-      "disassembleToGroups",
-      "getChoseong",
-      "hasFinal",
-      "isConsonant",
-      "isKorean",
-      "isSimilar",
-      "isSyllable",
-      "levenshteinKo",
-      "levenshteinKoTrace",
-      "matchSubsequenceKo",
-      "rankByKoPipeline",
-      "searchKoDetailed",
-      "searchKoRanked"
-    ],
+    "keys": ["createSearcher", "disassemble", "getChoseong", "highlight"],
     "hasDefault": false,
     "hasEsModule": false,
-    "ranked": [
+    "results": [
       {
-        "value": "홍길동",
-        "score": 0.6666666666666666
+        "item": "홍길동",
+        "index": 1,
+        "ranges": [[0, 2]]
       }
     ]
   },
   "browserRequire": {
-    "keys": [
-      "disassemble",
-      "disassembleCompleteCharacter",
-      "disassembleToGroups",
-      "getChoseong",
-      "hasFinal",
-      "isConsonant",
-      "isKorean",
-      "isSimilar",
-      "isSyllable",
-      "levenshteinKo",
-      "levenshteinKoTrace",
-      "matchSubsequenceKo",
-      "rankByKoPipeline",
-      "searchKoDetailed",
-      "searchKoRanked"
-    ],
+    "keys": ["createSearcher", "disassemble", "getChoseong", "highlight"],
     "hasDefault": false,
     "hasEsModule": false,
-    "ranked": [
+    "results": [
       {
-        "value": "홍길동",
-        "score": 0.6666666666666666
+        "item": "홍길동",
+        "index": 1,
+        "ranges": [[0, 2]]
       }
     ]
   },
   "browserIife": {
-    "keys": [
-      "disassemble",
-      "disassembleCompleteCharacter",
-      "disassembleToGroups",
-      "getChoseong",
-      "hasFinal",
-      "isConsonant",
-      "isKorean",
-      "isSimilar",
-      "isSyllable",
-      "levenshteinKo",
-      "levenshteinKoTrace",
-      "matchSubsequenceKo",
-      "rankByKoPipeline",
-      "searchKoDetailed",
-      "searchKoRanked"
-    ],
+    "keys": ["createSearcher", "disassemble", "getChoseong", "highlight"],
     "hasDefault": false,
     "hasEsModule": false,
-    "ranked": [
+    "results": [
       {
-        "value": "홍길동",
-        "score": 0.6666666666666666
+        "item": "홍길동",
+        "index": 1,
+        "ranges": [[0, 2]]
       }
     ]
   }

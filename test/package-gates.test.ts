@@ -117,20 +117,13 @@ it.each(['index.mjs', 'index.cjs', 'browser.mjs', 'index.iife.js'])(
     }
 
     expect(api.disassemble('값')).toBe('ㄱㅏㅂㅅ');
-    const names = ['홍길', '홍길동', '서울'];
-    expect(api.searchKoRanked('홍길', names)).toEqual(source.searchKoRanked('홍길', names));
-    expect(api.searchKoDetailed('홍', names)).toEqual(source.searchKoDetailed('홍', names));
-    const offsets = (query: string, candidate: string) =>
-      api.searchKoDetailed(query, [candidate])[0]?.subsequenceAlignments.map((a) => [a.queryIndex, a.targetIndex]);
-    expect(offsets('İx', 'aİbx')).toEqual([
-      [0, 1],
-      [0, 1],
-      [1, 3],
-    ]);
-    expect(offsets('😀', 'a😀b')).toEqual([
-      [0, 1],
+    const names = ['서울', '홍길동', '홍길'];
+    expect(api.createSearcher(names)('홍길')).toEqual(source.createSearcher(names)('홍길'));
+    expect(api.createSearcher(['aİbx'])('İx')[0]?.ranges).toEqual([
       [1, 2],
+      [3, 4],
     ]);
+    expect(api.createSearcher(['a😀b'])('😀')[0]?.ranges).toEqual([[1, 3]]);
 
     const mapRef = code.match(/^\/\/# sourceMappingURL=(.+)$/m)?.[1];
     expect(mapRef).toBe(fileName + '.map');
@@ -138,11 +131,11 @@ it.each(['index.mjs', 'index.cjs', 'browser.mjs', 'index.iife.js'])(
     expect(map.mappings).not.toBe('');
     expect(map.sourcesContent.some((content: string) => content.length > 0)).toBe(true);
     const lines = code.split('\n');
-    const generatedLine = lines.findIndex((line) => line.includes('function searchKoRanked'));
+    const generatedLine = lines.findIndex((line) => line.includes('function createSearcher'));
     expect(generatedLine).toBeGreaterThanOrEqual(0);
-    const mapped = new SourceMap(map).findEntry(generatedLine, lines[generatedLine]!.indexOf('searchKoRanked'));
-    expect(mapped.originalSource).toMatch(/src[/\\]api[/\\]searchKoRanked\.ts$/);
+    const mapped = new SourceMap(map).findEntry(generatedLine, lines[generatedLine]!.indexOf('createSearcher'));
+    expect(mapped.originalSource).toMatch(/src[/\\]search\.ts$/);
     const sourceIndex = map.sources.indexOf(mapped.originalSource);
-    expect(map.sourcesContent[sourceIndex].split('\n')[mapped.originalLine]).toMatch(/\bfunction\s+searchKoRanked\b/);
+    expect(map.sourcesContent[sourceIndex].split('\n')[mapped.originalLine]).toMatch(/\bfunction\s+createSearcher\b/);
   }
 );
